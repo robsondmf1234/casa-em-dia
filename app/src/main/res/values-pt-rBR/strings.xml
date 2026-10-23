@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Casa em Dia</string>
+
+    <string name="nav_home">Início</string>
+    <string name="nav_inventory">Estoque</string>
+    <string name="nav_shopping">Compras</string>
+
+    <string name="back">Voltar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Excluir</string>
+    <string name="edit">Editar</string>
+    <string name="save">Salvar</string>
+    <string name="add">Adicionar</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="clear">Limpar</string>
+    <string name="ok">OK</string>
+    <string name="loading">Carregando…</string>
+    <string name="generic_error">Algo deu errado. Tente novamente.</string>
+    <string name="action_failed">Não foi possível concluir a ação.</string>
+
+    <string name="home_title">Casa em Dia</string>
+    <string name="home_subtitle">Resumo da sua despensa</string>
+    <string name="home_total_items">Itens no estoque</string>
+    <string name="home_low_stock_count">Estoque baixo</string>
+    <string name="home_expiring_count">Perto de vencer</string>
+    <string name="home_low_stock_title">Alertas de estoque baixo</string>
+    <string name="home_expiring_title">Produtos perto de vencer</string>
+    <string name="home_no_alerts">Tudo em ordem! Nenhum alerta no momento.</string>
+    <string name="home_empty_title">Sua despensa está vazia</string>
+    <string name="home_empty_message">Cadastre seus primeiros produtos para acompanhar estoque e validade.</string>
+    <string name="home_add_first_item">Adicionar primeiro item</string>
+
+    <string name="inventory_title">Estoque</string>
+    <string name="inventory_search">Buscar produtos</string>
+    <string name="inventory_add_item">Adicionar item</string>
+    <string name="inventory_filter_all">Todos</string>
+    <string name="inventory_filter_low_stock">Estoque baixo</string>
+    <string name="inventory_empty_title">Nenhum item cadastrado</string>
+    <string name="inventory_empty_message">Toque em “+” para adicionar um produto.</string>
+    <string name="inventory_no_results">Nenhum item encontrado para o filtro atual.</string>
+
+    <string name="edit_title_new">Novo item</string>
+    <string name="edit_title_edit">Editar item</string>
+    <string name="field_name">Nome</string>
+    <string name="field_category">Categoria</string>
+    <string name="field_quantity">Quantidade</string>
+    <string name="field_unit">Unidade</string>
+    <string name="field_min_quantity">Estoque mínimo</string>
+    <string name="field_expiration">Validade</string>
+    <string name="field_location">Local de armazenamento</string>
+    <string name="field_notes">Observações</string>
+    <string name="expiration_none">Sem validade</string>
+    <string name="expiration_remove">Remover validade</string>
+    <string name="error_name_required">Informe o nome do produto</string>
+    <string name="error_number_invalid">Informe um número válido</string>
+    <string name="edit_not_found">Item não encontrado.</string>
+    <string name="edit_save_failed">Não foi possível salvar o item.</string>
+    <string name="item_saved">Item salvo com sucesso!</string>
+
+    <string name="details_title">Detalhes do item</string>
+    <string name="details_not_found">Este item não existe mais.</string>
+    <string name="details_add_to_shopping">Adicionar à lista de compras</string>
+    <string name="details_added_to_shopping">Adicionado à lista de compras!</string>
+    <string name="details_delete_title">Excluir item?</string>
+    <string name="details_delete_message">Esta ação não pode ser desfeita.</string>
+    <string name="details_min_quantity">Mínimo: %1$s</string>
+
+    <string name="shopping_title">Lista de compras</string>
+    <string name="shopping_suggestions">Sugestões (estoque baixo)</string>
+    <string name="shopping_add_all">Adicionar todas</string>
+    <string name="shopping_to_buy">Para comprar</string>
+    <string name="shopping_purchased">Comprados</string>
+    <string name="shopping_clear_purchased">Limpar comprados</string>
+    <string name="shopping_empty_title">Lista vazia</string>
+    <string name="shopping_empty_message">Adicione produtos manualmente ou aceite as sugestões de estoque baixo.</string>
+    <string name="shopping_add_placeholder">Adicionar à lista</string>
+    <string name="shopping_mark_purchased">Marcar como comprado</string>
+
+    <string name="status_ok">Válido</string>
+    <string name="status_expiring_soon">Vence em breve</string>
+    <string name="status_expired">Vencido</string>
+    <string name="status_low_stock">Estoque baixo</string>
+    <string name="expires_today">Vence hoje</string>
+    <string name="expires_in_days">Vence em %1$d dias</string>
+    <string name="expires_tomorrow">Vence amanhã</string>
+    <string name="expired_days_ago">Venceu há %1$d dias</string>
+    <string name="expired_yesterday">Venceu ontem</string>
+
+    <string name="category_food">Alimentos</string>
+    <string name="category_cleaning">Produtos de limpeza</string>
+    <string name="category_personal_care">Cuidados pessoais</string>
+    <string name="category_other">Outros</string>
+
+    <string name="unit_unit">un</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_g">g</string>
+    <string name="unit_l">L</string>
+    <string name="unit_ml">mL</string>
+    <string name="unit_pack">pacote(s)</string>
+
+    <string name="location_pantry">Despensa</string>
+    <string name="location_fridge">Geladeira</string>
+    <string name="location_freezer">Freezer</string>
+    <string name="location_kitchen">Cozinha</string>
+    <string name="location_bathroom">Banheiro</string>
+    <string name="location_laundry">Lavanderia</string>
+    <string name="location_other">Outro</string>
+</resources>
