@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.casaemdia.R
@@ -46,7 +49,9 @@ import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.OptionSelector
 import br.com.casaemdia.ui.components.formatDate
 import br.com.casaemdia.ui.components.labelRes
+import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneOffset
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -86,14 +91,40 @@ fun EditItemScreen(
         when {
             state.isLoading -> LoadingState(Modifier.padding(padding))
             state.notFound -> ErrorState(stringResource(R.string.edit_not_found), onBack, Modifier.padding(padding))
-            else -> EditForm(state, viewModel, Modifier.padding(padding))
+            else -> EditForm(
+                state = state,
+                today = viewModel.today,
+                onNameChange = viewModel::onNameChange,
+                onCategoryChange = viewModel::onCategoryChange,
+                onQuantityChange = viewModel::onQuantityChange,
+                onUnitChange = viewModel::onUnitChange,
+                onMinQuantityChange = viewModel::onMinQuantityChange,
+                onLocationChange = viewModel::onLocationChange,
+                onExpirationChange = viewModel::onExpirationChange,
+                onNotesChange = viewModel::onNotesChange,
+                onSave = viewModel::save,
+                modifier = Modifier.padding(padding),
+            )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Modifier) {
+private fun EditForm(
+    state: EditItemUiState,
+    today: LocalDate,
+    onNameChange: (String) -> Unit,
+    onCategoryChange: (Category) -> Unit,
+    onQuantityChange: (String) -> Unit,
+    onUnitChange: (UnitType) -> Unit,
+    onMinQuantityChange: (String) -> Unit,
+    onLocationChange: (StorageLocation) -> Unit,
+    onExpirationChange: (LocalDate?) -> Unit,
+    onNotesChange: (String) -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var showDatePicker by remember { mutableStateOf(false) }
     val numberKeyboard = KeyboardOptions(keyboardType = KeyboardType.Decimal)
     val numberError = stringResource(R.string.error_number_invalid)
@@ -104,11 +135,12 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
     ) {
         OutlinedTextField(
             value = state.name,
-            onValueChange = vm::onNameChange,
+            onValueChange = onNameChange,
             label = { Text(stringResource(R.string.field_name)) },
             isError = state.nameError,
             supportingText = { if (state.nameError) Text(stringResource(R.string.error_name_required)) },
             singleLine = true,
+            shape = RoundedCornerShape(50),
             modifier = Modifier.fillMaxWidth(),
         )
         OptionSelector(
@@ -116,17 +148,18 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
             options = Category.entries,
             selected = state.category,
             optionLabel = { stringResource(it.labelRes()) },
-            onSelected = vm::onCategoryChange,
+            onSelected = onCategoryChange,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
                 value = state.quantity,
-                onValueChange = vm::onQuantityChange,
+                onValueChange = onQuantityChange,
                 label = { Text(stringResource(R.string.field_quantity)) },
                 isError = state.quantityError,
                 supportingText = { if (state.quantityError) Text(numberError) },
                 keyboardOptions = numberKeyboard,
                 singleLine = true,
+                shape = RoundedCornerShape(50),
                 modifier = Modifier.weight(1f),
             )
             OptionSelector(
@@ -134,18 +167,19 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
                 options = UnitType.entries,
                 selected = state.unit,
                 optionLabel = { stringResource(it.labelRes()) },
-                onSelected = vm::onUnitChange,
+                onSelected = onUnitChange,
                 modifier = Modifier.weight(1f),
             )
         }
         OutlinedTextField(
             value = state.minQuantity,
-            onValueChange = vm::onMinQuantityChange,
+            onValueChange = onMinQuantityChange,
             label = { Text(stringResource(R.string.field_min_quantity)) },
             isError = state.minQuantityError,
             supportingText = { if (state.minQuantityError) Text(numberError) },
             keyboardOptions = numberKeyboard,
             singleLine = true,
+            shape = RoundedCornerShape(50),
             modifier = Modifier.fillMaxWidth(),
         )
         OptionSelector(
@@ -153,7 +187,7 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
             options = StorageLocation.entries,
             selected = state.location,
             optionLabel = { stringResource(it.labelRes()) },
-            onSelected = vm::onLocationChange,
+            onSelected = onLocationChange,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { showDatePicker = true }, modifier = Modifier.weight(1f)) {
@@ -163,29 +197,30 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
                 )
             }
             if (state.expirationDate != null) {
-                TextButton(onClick = { vm.onExpirationChange(null) }) {
+                TextButton(onClick = { onExpirationChange(null) }) {
                     Text(stringResource(R.string.expiration_remove))
                 }
             }
         }
         OutlinedTextField(
             value = state.notes,
-            onValueChange = vm::onNotesChange,
+            onValueChange = onNotesChange,
             label = { Text(stringResource(R.string.field_notes)) },
             minLines = 2,
+            shape = RoundedCornerShape(24.dp),
             modifier = Modifier.fillMaxWidth(),
         )
         if (state.saveFailed) {
-            Text(stringResource(R.string.edit_save_failed), color = androidx.compose.material3.MaterialTheme.colorScheme.error)
+            Text(stringResource(R.string.edit_save_failed), color = MaterialTheme.colorScheme.error)
         }
-        Button(onClick = vm::save, enabled = !state.isSaving, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = onSave, enabled = !state.isSaving, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.save))
         }
     }
 
     if (showDatePicker) {
         val pickerState = rememberDatePickerState(
-            initialSelectedDateMillis = (state.expirationDate ?: vm.today)
+            initialSelectedDateMillis = (state.expirationDate ?: today)
                 .atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
         )
         DatePickerDialog(
@@ -193,7 +228,7 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
             confirmButton = {
                 TextButton(onClick = {
                     pickerState.selectedDateMillis?.let { millis ->
-                        vm.onExpirationChange(Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate())
+                        onExpirationChange(Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate())
                     }
                     showDatePicker = false
                 }) { Text(stringResource(R.string.ok)) }
@@ -204,5 +239,36 @@ private fun EditForm(state: EditItemUiState, vm: EditItemViewModel, modifier: Mo
         ) {
             DatePicker(state = pickerState)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EditItemScreenPreview() {
+    val today = LocalDate.now()
+    CasaEmDiaTheme {
+        EditForm(
+            state = EditItemUiState(
+                isLoading = false,
+                name = "Detergente de Maçã",
+                category = Category.CLEANING,
+                quantity = "2",
+                unit = UnitType.UNIT,
+                minQuantity = "1",
+                location = StorageLocation.KITCHEN,
+                expirationDate = today.plusMonths(6),
+                notes = "Comprar na promoção se possível.",
+            ),
+            today = today,
+            onNameChange = {},
+            onCategoryChange = {},
+            onQuantityChange = {},
+            onUnitChange = {},
+            onMinQuantityChange = {},
+            onLocationChange = {},
+            onExpirationChange = {},
+            onNotesChange = {},
+            onSave = {},
+        )
     }
 }

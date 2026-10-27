@@ -36,10 +36,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.casaemdia.R
+import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
+import br.com.casaemdia.domain.model.StorageLocation
+import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.ui.components.EmptyState
 import br.com.casaemdia.ui.components.ErrorState
 import br.com.casaemdia.ui.components.ExpirationChip
@@ -48,6 +52,7 @@ import br.com.casaemdia.ui.components.StatusChip
 import br.com.casaemdia.ui.components.formatDate
 import br.com.casaemdia.ui.components.formatQuantity
 import br.com.casaemdia.ui.components.labelRes
+import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import br.com.casaemdia.ui.theme.WarningAmber
 import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
@@ -190,5 +195,30 @@ private fun DetailRow(label: String, value: String) {
     Column {
         Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemDetailsScreenPreview() {
+    val today = LocalDate.now()
+    val sampleItem = InventoryItem(
+        id = 1,
+        name = "Azeite de Oliva Extra Virgem 500ml",
+        category = Category.FOOD,
+        quantity = 1.0,
+        unit = UnitType.UNIT,
+        minQuantity = 2.0,
+        expirationDate = today.plusDays(15),
+        location = StorageLocation.PANTRY,
+        notes = "Preferencialmente da marca tradicional.",
+    )
+    CasaEmDiaTheme {
+        DetailsContent(
+            item = sampleItem,
+            today = today,
+            onAddToShopping = {},
+            modifier = Modifier,
+        )
     }
 }

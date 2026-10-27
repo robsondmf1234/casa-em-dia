@@ -19,6 +19,7 @@ val Green80 = Color(0xFFA5D6A7)
 val GreenContainer = Color(0xFFDDF3DE)
 val WarningAmber = Color(0xFFF9A825)
 val DangerRed = Color(0xFFC62828)
+val containerColor = Color(0xFFE8EBE8)
 
 private val LightColors = lightColorScheme(
     primary = Green40,
@@ -58,6 +59,7 @@ private val AppTypography = Typography(
 )
 
 private val AppShapes = Shapes(
+    extraSmall = RoundedCornerShape(50),
     small = RoundedCornerShape(12.dp),
     medium = RoundedCornerShape(16.dp),
     large = RoundedCornerShape(24.dp),

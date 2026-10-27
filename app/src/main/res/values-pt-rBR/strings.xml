@@ -21,7 +21,13 @@
 
     <string name="home_title">Casa em Dia</string>
     <string name="home_subtitle">Resumo da sua despensa</string>
+    <string name="home_greeting">Bom dia!</string>
+    <string name="home_greeting_subtitle">Tudo certo por aqui? 🙂</string>
     <string name="home_total_items">Itens no estoque</string>
+    <string name="home_items_at_home">itens em casa</string>
+    <string name="home_low_stock_short">acabando</string>
+    <string name="home_expiring_short">perto do vencimento</string>
+    <string name="home_overview">Visão geral</string>
     <string name="home_low_stock_count">Estoque baixo</string>
     <string name="home_expiring_count">Perto de vencer</string>
     <string name="home_low_stock_title">Alertas de estoque baixo</string>
