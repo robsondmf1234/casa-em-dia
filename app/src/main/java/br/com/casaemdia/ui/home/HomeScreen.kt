@@ -1,5 +1,7 @@
 package br.com.casaemdia.ui.home
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,12 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CleanHands
-import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -311,11 +311,11 @@ private fun CategoryCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Icon(
-                imageVector = categoryIcon(category),
+            Image(
+                painter = painterResource(categoryDrawableRes(category)),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = categoryColor(category),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(72.dp),
             )
             Text(
                 text = stringResource(category.labelRes()),
@@ -360,11 +360,11 @@ private fun RecentItemCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = categoryIcon(item.category),
+            Image(
+                painter = painterResource(categoryDrawableRes(item.category)),
                 contentDescription = null,
-                modifier = Modifier.size(28.dp),
-                tint = categoryColor(item.category),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(48.dp),
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
@@ -388,18 +388,12 @@ private fun RecentItemCard(
     }
 }
 
-private fun categoryIcon(category: Category): ImageVector = when (category) {
-    Category.FOOD -> Icons.Filled.Restaurant
-    Category.CLEANING -> Icons.Filled.CleaningServices
-    Category.PERSONAL_CARE -> Icons.Filled.CleanHands
-    Category.OTHER -> Icons.Filled.Category
-}
-
-private fun categoryColor(category: Category): Color = when (category) {
-    Category.FOOD -> Green40
-    Category.CLEANING -> Color(0xFF00897B)
-    Category.PERSONAL_CARE -> Color(0xFF1976D2)
-    Category.OTHER -> Color(0xFF757575)
+@DrawableRes
+private fun categoryDrawableRes(category: Category): Int = when (category) {
+    Category.FOOD -> R.drawable.image2
+    Category.CLEANING -> R.drawable.image3
+    Category.PERSONAL_CARE -> R.drawable.image1
+    Category.OTHER -> R.drawable.image1
 }
 
 private fun getGreetingMessage(): String = when (LocalTime.now().hour) {
