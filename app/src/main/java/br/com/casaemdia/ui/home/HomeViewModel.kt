@@ -2,6 +2,7 @@ package br.com.casaemdia.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.usecase.lowStock
@@ -23,6 +24,8 @@ data class HomeUiState(
     val totalItems: Int = 0,
     val lowStock: List<InventoryItem> = emptyList(),
     val expiring: List<InventoryItem> = emptyList(),
+    val categoryCounts: Map<Category, Int> = emptyMap(),
+    val recentItems: List<InventoryItem> = emptyList(),
 )
 
 class HomeViewModel(
@@ -37,12 +40,15 @@ class HomeViewModel(
             inventory.observeItems()
                 .map { items ->
                     val today = LocalDate.now(clock)
+                    val counts = items.groupBy { it.category }.mapValues { it.value.size }
                     HomeUiState(
                         isLoading = false,
                         today = today,
                         totalItems = items.size,
                         lowStock = items.lowStock(),
                         expiring = items.nearingExpiration(today),
+                        categoryCounts = counts,
+                        recentItems = items.sortedByDescending { it.id }.take(5),
                     )
                 }
                 .catch { emit(HomeUiState(isLoading = false, hasError = true)) }

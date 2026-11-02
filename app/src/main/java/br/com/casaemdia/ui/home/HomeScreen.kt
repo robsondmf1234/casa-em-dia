@@ -15,13 +15,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CleanHands
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,8 +45,9 @@ import br.com.casaemdia.domain.model.StorageLocation
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.ui.components.EmptyState
 import br.com.casaemdia.ui.components.ErrorState
-import br.com.casaemdia.ui.components.ItemCard
 import br.com.casaemdia.ui.components.LoadingState
+import br.com.casaemdia.ui.components.StatusChip
+import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import br.com.casaemdia.ui.theme.DangerRed
 import br.com.casaemdia.ui.theme.Green40
@@ -131,13 +137,49 @@ private fun HomeContent(
             }
         }
         item {
-            Text(
-                text = stringResource(R.string.home_overview),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = stringResource(R.string.home_overview),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val mainCategories = listOf(Category.FOOD, Category.CLEANING, Category.PERSONAL_CARE)
+                    mainCategories.forEach { category ->
+                        val count = state.categoryCounts[category] ?: 0
+                        CategoryCard(
+                            category = category,
+                            count = count,
+                            onClick = onNavigateToInventory,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+            }
         }
-        if (state.lowStock.isEmpty() && state.expiring.isEmpty()) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = stringResource(R.string.home_recent_items_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                TextButton(onClick = onNavigateToInventory) {
+                    Text(
+                        text = stringResource(R.string.home_see_all),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+        if (state.recentItems.isEmpty()) {
             item {
                 Text(
                     stringResource(R.string.home_no_alerts),
@@ -145,27 +187,9 @@ private fun HomeContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-        if (state.expiring.isNotEmpty()) {
-            item {
-                Text(
-                    stringResource(R.string.home_expiring_title),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-            items(state.expiring, key = { "e${it.id}" }) {
-                ItemCard(it, state.today, { onItemClick(it.id) })
-            }
-        }
-        if (state.lowStock.isNotEmpty()) {
-            item {
-                Text(
-                    stringResource(R.string.home_low_stock_title),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-            items(state.lowStock, key = { "l${it.id}" }) {
-                ItemCard(it, state.today, { onItemClick(it.id) })
+        } else {
+            items(state.recentItems, key = { it.id }) { item ->
+                RecentItemCard(item = item, onClick = { onItemClick(item.id) })
             }
         }
     }
@@ -268,6 +292,116 @@ private fun StatSubCard(
     }
 }
 
+@Composable
+private fun CategoryCard(
+    category: Category,
+    count: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(
+                imageVector = categoryIcon(category),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = categoryColor(category),
+            )
+            Text(
+                text = stringResource(category.labelRes()),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "$count itens",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentItemCard(
+    item: InventoryItem,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = categoryIcon(item.category),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = categoryColor(item.category),
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = stringResource(item.location.labelRes()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (item.isLowStock) {
+                StatusChip(stringResource(R.string.status_low_stock), Color(0xFFE65100))
+            } else {
+                StatusChip(stringResource(R.string.status_in_order), Green40)
+            }
+        }
+    }
+}
+
+private fun categoryIcon(category: Category): ImageVector = when (category) {
+    Category.FOOD -> Icons.Filled.Restaurant
+    Category.CLEANING -> Icons.Filled.CleaningServices
+    Category.PERSONAL_CARE -> Icons.Filled.CleanHands
+    Category.OTHER -> Icons.Filled.Category
+}
+
+private fun categoryColor(category: Category): Color = when (category) {
+    Category.FOOD -> Green40
+    Category.CLEANING -> Color(0xFF00897B)
+    Category.PERSONAL_CARE -> Color(0xFF1976D2)
+    Category.OTHER -> Color(0xFF757575)
+}
+
 private fun getGreetingMessage(): String = when (LocalTime.now().hour) {
     in 5..11 -> "Bom dia!"
     in 12..17 -> "Boa tarde!"
@@ -281,23 +415,30 @@ private fun HomeScreenPreview() {
     val sampleItems = listOf(
         InventoryItem(
             id = 1,
-            name = "Leite Desnatado 1L",
-            category = Category.FOOD,
-            quantity = 1.0,
-            unit = UnitType.L,
-            minQuantity = 2.0,
-            expirationDate = today.plusDays(2),
-            location = StorageLocation.FRIDGE,
+            name = "Detergente",
+            category = Category.CLEANING,
+            quantity = 2.0,
+            unit = UnitType.UNIT,
+            minQuantity = 1.0,
+            location = StorageLocation.KITCHEN,
         ),
         InventoryItem(
             id = 2,
-            name = "Detergente Líquido",
-            category = Category.CLEANING,
-            quantity = 0.0,
-            unit = UnitType.UNIT,
+            name = "Macarrão",
+            category = Category.FOOD,
+            quantity = 3.0,
+            unit = UnitType.PACK,
             minQuantity = 1.0,
-            expirationDate = today.plusDays(30),
-            location = StorageLocation.KITCHEN,
+            location = StorageLocation.PANTRY,
+        ),
+        InventoryItem(
+            id = 3,
+            name = "Arroz",
+            category = Category.FOOD,
+            quantity = 5.0,
+            unit = UnitType.KG,
+            minQuantity = 2.0,
+            location = StorageLocation.PANTRY,
         ),
     )
     CasaEmDiaTheme {
@@ -306,8 +447,14 @@ private fun HomeScreenPreview() {
                 isLoading = false,
                 today = today,
                 totalItems = 18,
-                lowStock = listOf(sampleItems[1]),
-                expiring = listOf(sampleItems[0]),
+                lowStock = listOf(sampleItems[0]),
+                expiring = emptyList(),
+                categoryCounts = mapOf(
+                    Category.FOOD to 9,
+                    Category.CLEANING to 5,
+                    Category.PERSONAL_CARE to 4,
+                ),
+                recentItems = sampleItems,
             ),
             onItemClick = {},
             onNavigateToInventory = {},

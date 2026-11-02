@@ -22,6 +22,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,7 +92,7 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
 
     NavHost(navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
-            TabScaffold(Tab.Home, navController, showBrandHeader = true, onAdd = addItem) { modifier ->
+            TabScaffold(Tab.Home, navController, showBrandHeader = true) { modifier ->
                 HomeScreen(
                     onItemClick = openDetails,
                     onAddItem = addItem,
@@ -174,6 +175,10 @@ private fun TabScaffold(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.background,
+                ),
             )
         },
         bottomBar = {
