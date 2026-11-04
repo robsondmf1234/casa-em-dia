@@ -40,10 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.casaemdia.R
 import br.com.casaemdia.domain.model.Category
+import br.com.casaemdia.domain.model.ExpirationStatus
 import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.StorageLocation
 import br.com.casaemdia.domain.model.UnitType
+import br.com.casaemdia.domain.usecase.expirationStatus
 import br.com.casaemdia.ui.components.EmptyState
+import br.com.casaemdia.ui.components.ExpirationChip
 import br.com.casaemdia.ui.components.ErrorState
 import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.StatusChip
@@ -189,7 +192,7 @@ private fun HomeContent(
             }
         } else {
             items(state.recentItems, key = { it.id }) { item ->
-                RecentItemCard(item = item, onClick = { onItemClick(item.id) })
+                RecentItemCard(item = item, today = state.today, onClick = { onItemClick(item.id) })
             }
         }
     }
@@ -346,6 +349,7 @@ private fun CategoryCard(
 @Composable
 private fun RecentItemCard(
     item: InventoryItem,
+    today: LocalDate,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -379,8 +383,11 @@ private fun RecentItemCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            val expirationStatus = item.expirationStatus(today)
             if (item.isLowStock) {
                 StatusChip(stringResource(R.string.status_low_stock), Color(0xFFE65100))
+            } else if (expirationStatus == ExpirationStatus.EXPIRED || expirationStatus == ExpirationStatus.EXPIRING_SOON) {
+                ExpirationChip(item, today)
             } else {
                 StatusChip(stringResource(R.string.status_in_order), Green40)
             }
