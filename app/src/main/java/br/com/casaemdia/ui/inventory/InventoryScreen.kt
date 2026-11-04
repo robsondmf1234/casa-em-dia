@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +38,7 @@ import br.com.casaemdia.ui.components.ItemCard
 import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import br.com.casaemdia.ui.theme.Green40
 import br.com.casaemdia.ui.theme.containerColor
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
@@ -110,27 +112,69 @@ fun InventoryContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
+                    val isSelected = state.category == null && !state.lowStockOnly
                     FilterChip(
-                        selected = state.category == null && !state.lowStockOnly,
+                        selected = isSelected,
                         onClick = {
                             onCategorySelected(null)
                             if (state.lowStockOnly) onLowStockToggled()
                         },
                         label = { Text(stringResource(R.string.inventory_filter_all)) },
+                        shape = RoundedCornerShape(50),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Green40,
+                            selectedLabelColor = Color.White,
+                            containerColor = Color(0xFFE2F0E2),
+                            labelColor = Green40,
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = Color.Transparent,
+                            selectedBorderColor = Color.Transparent,
+                        ),
                     )
                 }
                 items(Category.entries) { category ->
+                    val isSelected = state.category == category
                     FilterChip(
-                        selected = state.category == category,
+                        selected = isSelected,
                         onClick = { onCategorySelected(if (state.category == category) null else category) },
                         label = { Text(stringResource(category.labelRes())) },
+                        shape = RoundedCornerShape(50),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Green40,
+                            selectedLabelColor = Color.White,
+                            containerColor = Color(0xFFE2F0E2),
+                            labelColor = Green40,
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = Color.Transparent,
+                            selectedBorderColor = Color.Transparent,
+                        ),
                     )
                 }
                 item {
+                    val isSelected = state.lowStockOnly
                     FilterChip(
-                        selected = state.lowStockOnly,
+                        selected = isSelected,
                         onClick = onLowStockToggled,
                         label = { Text(stringResource(R.string.inventory_filter_low_stock)) },
+                        shape = RoundedCornerShape(50),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Green40,
+                            selectedLabelColor = Color.White,
+                            containerColor = Color(0xFFE2F0E2),
+                            labelColor = Green40,
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = Color.Transparent,
+                            selectedBorderColor = Color.Transparent,
+                        ),
                     )
                 }
             }
