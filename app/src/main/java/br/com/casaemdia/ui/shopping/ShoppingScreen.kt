@@ -30,16 +30,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.casaemdia.R
+import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.ShoppingItem
+import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.ui.components.EmptyState
 import br.com.casaemdia.ui.components.ErrorState
 import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.formatQuantity
 import br.com.casaemdia.ui.components.labelRes
+import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -51,19 +55,37 @@ fun ShoppingScreen(
     when {
         state.isLoading -> LoadingState(modifier)
         state.hasError -> ErrorState(stringResource(R.string.generic_error), viewModel::retry, modifier)
-        else -> ShoppingContent(state, viewModel, modifier)
+        else -> ShoppingContent(
+            state = state,
+            onAddManual = viewModel::addManual,
+            onAddSuggestion = viewModel::addSuggestion,
+            onAddAllSuggestions = viewModel::addAllSuggestions,
+            onTogglePurchased = viewModel::togglePurchased,
+            onDelete = viewModel::delete,
+            onClearPurchased = viewModel::clearPurchased,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
-private fun ShoppingContent(state: ShoppingUiState, vm: ShoppingViewModel, modifier: Modifier) {
+private fun ShoppingContent(
+    state: ShoppingUiState,
+    onAddManual: (String, String) -> Unit,
+    onAddSuggestion: (InventoryItem) -> Unit,
+    onAddAllSuggestions: () -> Unit,
+    onTogglePurchased: (ShoppingItem) -> Unit,
+    onDelete: (ShoppingItem) -> Unit,
+    onClearPurchased: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val isEmpty = state.pending.isEmpty() && state.purchased.isEmpty() && state.suggestions.isEmpty()
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item { AddManualRow(onAdd = vm::addManual) }
+        item { AddManualRow(onAdd = onAddManual) }
         if (state.actionFailed) {
             item {
                 Text(
@@ -92,14 +114,14 @@ private fun ShoppingContent(state: ShoppingUiState, vm: ShoppingViewModel, modif
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = vm::addAllSuggestions) { Text(stringResource(R.string.shopping_add_all)) }
+                    TextButton(onClick = onAddAllSuggestions) { Text(stringResource(R.string.shopping_add_all)) }
                 }
             }
-            items(state.suggestions, key = { "s${it.id}" }) { SuggestionRow(it) { vm.addSuggestion(it) } }
+            items(state.suggestions, key = { "s${it.id}" }) { SuggestionRow(it) { onAddSuggestion(it) } }
         }
         if (state.pending.isNotEmpty()) {
             item { Text(stringResource(R.string.shopping_to_buy), style = MaterialTheme.typography.titleLarge) }
-            items(state.pending, key = { "p${it.id}" }) { ShoppingRow(it, vm) }
+            items(state.pending, key = { "p${it.id}" }) { ShoppingRow(it, onTogglePurchased, onDelete) }
         }
         if (state.purchased.isNotEmpty()) {
             item {
@@ -109,12 +131,12 @@ private fun ShoppingContent(state: ShoppingUiState, vm: ShoppingViewModel, modif
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = vm::clearPurchased) {
+                    TextButton(onClick = onClearPurchased) {
                         Text(stringResource(R.string.shopping_clear_purchased))
                     }
                 }
             }
-            items(state.purchased, key = { "b${it.id}" }) { ShoppingRow(it, vm) }
+            items(state.purchased, key = { "b${it.id}" }) { ShoppingRow(it, onTogglePurchased, onDelete) }
         }
     }
 }
@@ -128,6 +150,7 @@ private fun AddManualRow(onAdd: (String, String) -> Unit) {
             onValueChange = { name = it },
             placeholder = { Text(stringResource(R.string.shopping_add_placeholder)) },
             singleLine = true,
+            shape = RoundedCornerShape(50),
             modifier = Modifier.weight(1f),
         )
         IconButton(
@@ -163,23 +186,63 @@ private fun SuggestionRow(item: InventoryItem, onAdd: () -> Unit) {
 }
 
 @Composable
-private fun ShoppingRow(item: ShoppingItem, vm: ShoppingViewModel) {
+private fun ShoppingRow(
+    item: ShoppingItem,
+    onTogglePurchased: (ShoppingItem) -> Unit,
+    onDelete: (ShoppingItem) -> Unit,
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(Modifier.padding(end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = item.purchased, onCheckedChange = { vm.togglePurchased(item) })
+            Checkbox(checked = item.purchased, onCheckedChange = { onTogglePurchased(item) })
             Text(
                 "${item.name} • ${formatQuantity(item.quantity)} ${stringResource(item.unit.labelRes())}",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
                 textDecoration = if (item.purchased) TextDecoration.LineThrough else null,
             )
-            IconButton(onClick = { vm.delete(item) }) {
+            IconButton(onClick = { onDelete(item) }) {
                 Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ShoppingScreenPreview() {
+    val sampleItem = InventoryItem(
+        id = 1,
+        name = "Café Torrado e Moído 500g",
+        category = Category.FOOD,
+        quantity = 0.0,
+        unit = UnitType.PACK,
+        minQuantity = 1.0,
+    )
+    val pendingShopping = listOf(
+        ShoppingItem(id = 1, name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
+        ShoppingItem(id = 2, name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
+    )
+    val purchasedShopping = listOf(
+        ShoppingItem(id = 3, name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
+    )
+    CasaEmDiaTheme {
+        ShoppingContent(
+            state = ShoppingUiState(
+                isLoading = false,
+                suggestions = listOf(sampleItem),
+                pending = pendingShopping,
+                purchased = purchasedShopping,
+            ),
+            onAddManual = { _, _ -> },
+            onAddSuggestion = {},
+            onAddAllSuggestions = {},
+            onTogglePurchased = {},
+            onDelete = {},
+            onClearPurchased = {},
+        )
     }
 }
