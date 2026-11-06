@@ -3,7 +3,7 @@
     <string name="app_name">Casa em Dia</string>
 
     <string name="nav_home">Início</string>
-    <string name="nav_inventory">Estoque</string>
+    <string name="nav_inventory">Meus Itens</string>
     <string name="nav_shopping">Compras</string>
 
     <string name="back">Voltar</string>
@@ -40,7 +40,7 @@
     <string name="home_empty_message">Cadastre seus primeiros produtos para acompanhar estoque e validade.</string>
     <string name="home_add_first_item">Adicionar primeiro item</string>
 
-    <string name="inventory_title">Estoque</string>
+    <string name="inventory_title">Meus Itens</string>
     <string name="inventory_search">Buscar produtos</string>
     <string name="inventory_add_item">Adicionar item</string>
     <string name="inventory_filter_all">Todos</string>

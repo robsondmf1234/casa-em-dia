@@ -39,7 +39,6 @@ import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import br.com.casaemdia.ui.theme.Green40
-import br.com.casaemdia.ui.theme.containerColor
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
@@ -80,8 +79,8 @@ fun InventoryContent(
         else -> Column(modifier) {
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = containerColor,
-                    unfocusedContainerColor = containerColor,
+                    focusedContainerColor = Color(0xFFE2F0E2),
+                    unfocusedContainerColor = Color(0xFFE2F0E2),
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     disabledBorderColor = Color.Transparent,
