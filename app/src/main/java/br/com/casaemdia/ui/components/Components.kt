@@ -191,10 +191,17 @@ fun ItemCard(item: InventoryItem, today: LocalDate, onClick: () -> Unit, modifie
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val status = item.expirationStatus(today)
+                val hasExpirationAlert =
+                    status == ExpirationStatus.EXPIRED || status == ExpirationStatus.EXPIRING_SOON
+                if (item.isLowStock) {
+                    StatusChip(stringResource(R.string.home_low_stock_short), Color(0xFFE65100))
+                }
+                if (item.isLowStock && hasExpirationAlert) {
+                    Spacer(Modifier.width(4.dp))
+                }
                 when {
-                    item.isLowStock -> StatusChip(stringResource(R.string.home_low_stock_short), Color(0xFFE65100))
-                    status == ExpirationStatus.EXPIRED -> StatusChip(stringResource(R.string.status_expired), DangerRed)
-                    else -> StatusChip(stringResource(R.string.status_in_order), Green40)
+                    hasExpirationAlert -> ExpirationChip(item, today)
+                    !item.isLowStock -> StatusChip(stringResource(R.string.status_in_order), Green40)
                 }
                 Spacer(Modifier.width(8.dp))
                 Icon(
