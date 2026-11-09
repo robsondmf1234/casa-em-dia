@@ -3,8 +3,10 @@ package br.com.casaemdia.ui.navigation
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Settings
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -108,7 +112,7 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
             }
         }
         composable(Routes.INVENTORY) {
-            TabScaffold(Tab.Inventory, navController, onAdd = addItem) { modifier ->
+            TabScaffold(Tab.Inventory, navController, titleText = "Meus itens", onAdd = addItem) { modifier ->
                 InventoryScreen(onItemClick = openDetails, onAddItem = addItem, modifier = modifier)
             }
         }
@@ -136,6 +140,7 @@ private fun TabScaffold(
     current: Tab,
     navController: NavHostController,
     showBrandHeader: Boolean = false,
+    titleText: String? = null,
     onAdd: (() -> Unit)? = null,
     content: @Composable (Modifier) -> Unit,
 ) {
@@ -157,10 +162,16 @@ private fun TabScaffold(
                                 text = stringResource(R.string.home_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                     } else {
-                        Text(stringResource(current.label))
+                        Text(
+                            text = titleText ?: stringResource(current.label),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
                 },
                 actions = {
@@ -173,6 +184,14 @@ private fun TabScaffold(
                                 .size(24.dp),
                             tint = MaterialTheme.colorScheme.primary,
                         )
+                    } else if (current == Tab.Inventory) {
+                        IconButton(onClick = { /* Filter action */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.FilterList,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -224,12 +243,65 @@ private fun TabScaffold(
         },
         floatingActionButton = {
             if (onAdd != null) {
-                FloatingActionButton(onClick = onAdd) {
-                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.inventory_add_item))
+                FloatingActionButton(
+                    onClick = onAdd,
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.inventory_add_item),
+                    )
                 }
             }
         },
     ) { padding ->
         content(Modifier.padding(padding))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TabScaffoldPreview() {
+    br.com.casaemdia.ui.theme.CasaEmDiaTheme {
+        TabScaffold(
+            current = Tab.Inventory,
+            navController = rememberNavController(),
+            titleText = "Meus itens",
+            onAdd = {},
+        ) { modifier ->
+            br.com.casaemdia.ui.inventory.InventoryContent(
+                state = br.com.casaemdia.ui.inventory.InventoryUiState(
+                    isLoading = false,
+                    items = listOf(
+                        br.com.casaemdia.domain.model.InventoryItem(
+                            id = 1,
+                            name = "Macarrão",
+                            category = br.com.casaemdia.domain.model.Category.FOOD,
+                            quantity = 2.0,
+                            unit = br.com.casaemdia.domain.model.UnitType.PACK,
+                            minQuantity = 1.0,
+                        ),
+                        br.com.casaemdia.domain.model.InventoryItem(
+                            id = 2,
+                            name = "Arroz",
+                            category = br.com.casaemdia.domain.model.Category.FOOD,
+                            quantity = 1.0,
+                            unit = br.com.casaemdia.domain.model.UnitType.KG,
+                            minQuantity = 2.0,
+                        ),
+                    ),
+                    totalCount = 2,
+                ),
+                onQueryChange = {},
+                onCategorySelected = {},
+                onLowStockToggled = {},
+                onRetry = {},
+                onItemClick = {},
+                onAddItem = {},
+                modifier = modifier,
+            )
+        }
     }
 }
