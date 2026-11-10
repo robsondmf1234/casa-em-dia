@@ -1,5 +1,7 @@
 package br.com.casaemdia.ui.components
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Button
@@ -36,7 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -140,34 +147,69 @@ fun ExpirationChip(item: InventoryItem, today: LocalDate, modifier: Modifier = M
     StatusChip(text, statusColor(status), modifier)
 }
 
+@DrawableRes
+fun categoryDrawableRes(category: Category): Int = when (category) {
+    Category.FOOD -> R.drawable.image2
+    Category.CLEANING -> R.drawable.image3
+    Category.PERSONAL_CARE -> R.drawable.image1
+    Category.OTHER -> R.drawable.image1
+}
+
 @Composable
 fun ItemCard(item: InventoryItem, today: LocalDate, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(categoryDrawableRes(item.category)),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(48.dp),
+            )
+            Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
-                Text(item.name, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "${stringResource(item.category.labelRes())} • ${stringResource(item.location.labelRes())}",
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = stringResource(item.category.labelRes()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (item.isLowStock) StatusChip(stringResource(R.string.status_low_stock), WarningAmber)
-                    ExpirationChip(item, today)
-                }
+                Text(
+                    text = "${formatQuantity(item.quantity)} ${stringResource(item.unit.labelRes())}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
-            Text(
-                "${formatQuantity(item.quantity)} ${stringResource(item.unit.labelRes())}",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val status = item.expirationStatus(today)
+                val hasExpirationAlert =
+                    status == ExpirationStatus.EXPIRED || status == ExpirationStatus.EXPIRING_SOON
+                if (item.isLowStock) {
+                    StatusChip(stringResource(R.string.home_low_stock_short), Color(0xFFE65100))
+                }
+                if (item.isLowStock && hasExpirationAlert) {
+                    Spacer(Modifier.width(4.dp))
+                }
+                when {
+                    hasExpirationAlert -> ExpirationChip(item, today)
+                    !item.isLowStock -> StatusChip(stringResource(R.string.status_in_order), Green40)
+                }
+                Spacer(Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
