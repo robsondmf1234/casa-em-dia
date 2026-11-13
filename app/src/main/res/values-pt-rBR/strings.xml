@@ -49,8 +49,23 @@
     <string name="inventory_empty_message">Toque em “+” para adicionar um produto.</string>
     <string name="inventory_no_results">Nenhum item encontrado para o filtro atual.</string>
 
-    <string name="edit_title_new">Novo item</string>
+    <string name="edit_title_new">Adicionar item</string>
     <string name="edit_title_edit">Editar item</string>
+    <string name="edit_product_name">Nome do produto *</string>
+    <string name="edit_product_name_hint">Ex: Macarrão</string>
+    <string name="edit_category_required">Categoria *</string>
+    <string name="edit_category_hint">Selecione a categoria</string>
+    <string name="edit_quantity_required">Quantidade *</string>
+    <string name="edit_quantity_hint">Ex: 2</string>
+    <string name="edit_unit_required">Unidade *</string>
+    <string name="edit_unit_hint">Selecione</string>
+    <string name="edit_expiration_optional">Validade (opcional)</string>
+    <string name="edit_expiration_hint">dd/mm/aaaa</string>
+    <string name="edit_location_optional">Local de armazenamento (opcional)</string>
+    <string name="edit_location_hint">Ex: Armário, despensa, geladeira</string>
+    <string name="edit_notes_optional">Observações (opcional)</string>
+    <string name="edit_notes_hint">Ex: marca, tamanho, etc.</string>
+    <string name="edit_save_item">Salvar item</string>
     <string name="field_name">Nome</string>
     <string name="field_category">Categoria</string>
     <string name="field_quantity">Quantidade</string>
