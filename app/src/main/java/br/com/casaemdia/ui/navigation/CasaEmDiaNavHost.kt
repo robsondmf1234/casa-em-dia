@@ -43,9 +43,23 @@ import androidx.navigation.navArgument
 import br.com.casaemdia.R
 import br.com.casaemdia.ui.details.ItemDetailsScreen
 import br.com.casaemdia.ui.edit.EditItemScreen
+import android.content.res.Configuration
+import br.com.casaemdia.domain.model.Category
+import br.com.casaemdia.domain.model.InventoryItem
+import br.com.casaemdia.domain.model.ShoppingItem
+import br.com.casaemdia.domain.model.StorageLocation
+import br.com.casaemdia.domain.model.UnitType
+import br.com.casaemdia.ui.home.HomeContent
 import br.com.casaemdia.ui.home.HomeScreen
+import br.com.casaemdia.ui.home.HomeUiState
+import br.com.casaemdia.ui.inventory.InventoryContent
 import br.com.casaemdia.ui.inventory.InventoryScreen
+import br.com.casaemdia.ui.inventory.InventoryUiState
+import br.com.casaemdia.ui.shopping.ShoppingContent
 import br.com.casaemdia.ui.shopping.ShoppingScreen
+import br.com.casaemdia.ui.shopping.ShoppingUiState
+import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import java.time.LocalDate
 
 object Routes {
     const val HOME = "home"
@@ -251,34 +265,85 @@ private fun TabScaffold(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Home Tab", showBackground = true)
 @Composable
-private fun TabScaffoldPreview() {
-    br.com.casaemdia.ui.theme.CasaEmDiaTheme {
+private fun TabScaffoldHomePreview() {
+    val sampleItems = listOf(
+        InventoryItem(
+            id = 1,
+            name = "Detergente",
+            category = Category.CLEANING,
+            quantity = 2.0,
+            unit = UnitType.UNIT,
+            minQuantity = 1.0,
+            location = StorageLocation.KITCHEN,
+        ),
+        InventoryItem(
+            id = 2,
+            name = "Macarrão",
+            category = Category.FOOD,
+            quantity = 3.0,
+            unit = UnitType.PACK,
+            minQuantity = 1.0,
+            location = StorageLocation.PANTRY,
+        ),
+    )
+    CasaEmDiaTheme {
+        TabScaffold(
+            current = Tab.Home,
+            navController = rememberNavController(),
+            showBrandHeader = true,
+        ) { modifier ->
+            HomeContent(
+                state = HomeUiState(
+                    isLoading = false,
+                    today = LocalDate.now(),
+                    totalItems = 12,
+                    lowStock = listOf(sampleItems[0]),
+                    expiring = emptyList(),
+                    categoryCounts = mapOf(
+                        Category.FOOD to 8,
+                        Category.CLEANING to 4,
+                    ),
+                    recentItems = sampleItems,
+                ),
+                onItemClick = {},
+                onNavigateToInventory = {},
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+@Preview(name = "Inventory Tab - Light", showBackground = true)
+@Preview(name = "Inventory Tab - Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun TabScaffoldInventoryPreview() {
+    CasaEmDiaTheme {
         TabScaffold(
             current = Tab.Inventory,
             navController = rememberNavController(),
             titleText = "Meus itens",
             onAdd = {},
         ) { modifier ->
-            br.com.casaemdia.ui.inventory.InventoryContent(
-                state = br.com.casaemdia.ui.inventory.InventoryUiState(
+            InventoryContent(
+                state = InventoryUiState(
                     isLoading = false,
                     items = listOf(
-                        br.com.casaemdia.domain.model.InventoryItem(
+                        InventoryItem(
                             id = 1,
                             name = "Macarrão",
-                            category = br.com.casaemdia.domain.model.Category.FOOD,
+                            category = Category.FOOD,
                             quantity = 2.0,
-                            unit = br.com.casaemdia.domain.model.UnitType.PACK,
+                            unit = UnitType.PACK,
                             minQuantity = 1.0,
                         ),
-                        br.com.casaemdia.domain.model.InventoryItem(
+                        InventoryItem(
                             id = 2,
                             name = "Arroz",
-                            category = br.com.casaemdia.domain.model.Category.FOOD,
+                            category = Category.FOOD,
                             quantity = 1.0,
-                            unit = br.com.casaemdia.domain.model.UnitType.KG,
+                            unit = UnitType.KG,
                             minQuantity = 2.0,
                         ),
                     ),
@@ -290,6 +355,48 @@ private fun TabScaffoldPreview() {
                 onRetry = {},
                 onItemClick = {},
                 onAddItem = {},
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+@Preview(name = "Shopping Tab", showBackground = true)
+@Composable
+private fun TabScaffoldShoppingPreview() {
+    val sampleItem = InventoryItem(
+        id = 1,
+        name = "Café Torrado 500g",
+        category = Category.FOOD,
+        quantity = 0.0,
+        unit = UnitType.PACK,
+        minQuantity = 1.0,
+    )
+    val pendingShopping = listOf(
+        ShoppingItem(id = 1, name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
+        ShoppingItem(id = 2, name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
+    )
+    val purchasedShopping = listOf(
+        ShoppingItem(id = 3, name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
+    )
+    CasaEmDiaTheme {
+        TabScaffold(
+            current = Tab.Shopping,
+            navController = rememberNavController(),
+        ) { modifier ->
+            ShoppingContent(
+                state = ShoppingUiState(
+                    isLoading = false,
+                    suggestions = listOf(sampleItem),
+                    pending = pendingShopping,
+                    purchased = purchasedShopping,
+                ),
+                onAddManual = { _, _ -> },
+                onAddSuggestion = {},
+                onAddAllSuggestions = {},
+                onTogglePurchased = {},
+                onDelete = {},
+                onClearPurchased = {},
                 modifier = modifier,
             )
         }
