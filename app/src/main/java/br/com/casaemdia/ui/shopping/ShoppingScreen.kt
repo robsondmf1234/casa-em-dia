@@ -44,6 +44,8 @@ import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.formatQuantity
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import br.com.casaemdia.ui.viewmodel.ShoppingUiState
+import br.com.casaemdia.ui.viewmodel.ShoppingViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

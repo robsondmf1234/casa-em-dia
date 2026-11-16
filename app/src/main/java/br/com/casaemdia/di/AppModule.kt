@@ -8,11 +8,11 @@ import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
-import br.com.casaemdia.ui.details.ItemDetailsViewModel
-import br.com.casaemdia.ui.edit.EditItemViewModel
-import br.com.casaemdia.ui.home.HomeViewModel
-import br.com.casaemdia.ui.inventory.InventoryViewModel
-import br.com.casaemdia.ui.shopping.ShoppingViewModel
+import br.com.casaemdia.ui.viewmodel.EditItemViewModel
+import br.com.casaemdia.ui.viewmodel.HomeViewModel
+import br.com.casaemdia.ui.viewmodel.InventoryViewModel
+import br.com.casaemdia.ui.viewmodel.ItemDetailsViewModel
+import br.com.casaemdia.ui.viewmodel.ShoppingViewModel
 import java.time.Clock
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel

@@ -67,6 +67,8 @@ import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.formatDate
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import br.com.casaemdia.ui.viewmodel.EditItemUiState
+import br.com.casaemdia.ui.viewmodel.EditItemViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset

@@ -39,6 +39,8 @@ import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import br.com.casaemdia.ui.theme.Green40
+import br.com.casaemdia.ui.viewmodel.InventoryUiState
+import br.com.casaemdia.ui.viewmodel.InventoryViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 

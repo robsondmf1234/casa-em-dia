@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.inventory
+package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.testing.FIXED_CLOCK

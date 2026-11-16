@@ -14,8 +14,8 @@ O idioma da interface é português do Brasil. Tanto `res/values/strings.xml` qu
 ./gradlew assembleDebug                 # gera o APK de debug
 ./gradlew installDebug                  # instala em dispositivo/emulador
 ./gradlew testDebugUnitTest             # todos os testes unitários
-./gradlew testDebugUnitTest --tests "br.com.casaemdia.ui.home.HomeViewModelTest"            # uma classe
-./gradlew testDebugUnitTest --tests "br.com.casaemdia.ui.home.HomeViewModelTest.updatesWhenInventoryChanges"  # um teste
+./gradlew testDebugUnitTest --tests "br.com.casaemdia.ui.viewmodel.HomeViewModelTest"            # uma classe
+./gradlew testDebugUnitTest --tests "br.com.casaemdia.ui.viewmodel.HomeViewModelTest.updatesWhenInventoryChanges"  # um teste
 ```
 
 Só existem testes unitários na JVM (JUnit 4, MockK, kotlinx-coroutines-test). Não há testes instrumentados nem ferramenta de lint/formatação configurada.

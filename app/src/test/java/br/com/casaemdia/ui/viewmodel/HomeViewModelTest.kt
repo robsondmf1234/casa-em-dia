@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.home
+package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.testing.FIXED_CLOCK
 import br.com.casaemdia.testing.FakeInventoryRepository

@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.details
+package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.testing.FIXED_CLOCK

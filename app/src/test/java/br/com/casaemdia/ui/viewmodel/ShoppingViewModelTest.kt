@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.shopping
+package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.model.UnitType
