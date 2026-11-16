@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.edit
+package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.StorageLocation

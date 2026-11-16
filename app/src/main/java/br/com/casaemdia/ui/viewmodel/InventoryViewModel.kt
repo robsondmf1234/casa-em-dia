@@ -1,4 +1,4 @@
-package br.com.casaemdia.ui.inventory
+package br.com.casaemdia.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

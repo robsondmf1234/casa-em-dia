@@ -62,6 +62,9 @@ Toda nova funcionalidade ou alteração deve respeitar rigorosamente a separaç�
 ### 3.4. Gerenciamento de Dependências
 - Todas as dependências e versões devem ser declaradas centralizadamente no arquivo [`gradle/libs.versions.toml`](gradle/libs.versions.toml). Não adicione strings diretas de versão no `build.gradle.kts`.
 
+### 3.5. Idioma de Comunicação do Agente
+- **MANDATÓRIO:** Toda e qualquer resposta, explicação, plano de implantação, relatório ou mensagem gerada pelo agente de IA para o usuário deve ser **obrigatoriamente em Português (Brasil)**.
+
 ---
 
 ## 4. Protocolo Obrigatório de Trabalho da IA
@@ -84,6 +87,7 @@ flowchart TD
 - Mapear possíveis efeitos colaterais e riscos de quebra (migrações de Room, navegação, previews ou testes existentes).
 
 ### Passo 2: Elaboração do Plano de Implantação
+- **OBRIGATÓRIO:** Criar e/ou atualizar o arquivo temporário de plano de implantação (`implementation_plan.artifact.md`) sempre que planejar mudanças a serem feitas.
 O plano deve ser estruturado e conter:
 1. **Objetivo:** Descrição clara do que será feito e por quê.
 2. **Arquivos Afetados:** Lista completa com caminho de cada arquivo a ser criado, alterado ou excluído.

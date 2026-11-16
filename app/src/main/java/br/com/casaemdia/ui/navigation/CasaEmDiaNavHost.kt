@@ -51,14 +51,14 @@ import br.com.casaemdia.domain.model.StorageLocation
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.ui.home.HomeContent
 import br.com.casaemdia.ui.home.HomeScreen
-import br.com.casaemdia.ui.home.HomeUiState
 import br.com.casaemdia.ui.inventory.InventoryContent
 import br.com.casaemdia.ui.inventory.InventoryScreen
-import br.com.casaemdia.ui.inventory.InventoryUiState
 import br.com.casaemdia.ui.shopping.ShoppingContent
 import br.com.casaemdia.ui.shopping.ShoppingScreen
-import br.com.casaemdia.ui.shopping.ShoppingUiState
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import br.com.casaemdia.ui.viewmodel.HomeUiState
+import br.com.casaemdia.ui.viewmodel.InventoryUiState
+import br.com.casaemdia.ui.viewmodel.ShoppingUiState
 import java.time.LocalDate
 
 object Routes {
