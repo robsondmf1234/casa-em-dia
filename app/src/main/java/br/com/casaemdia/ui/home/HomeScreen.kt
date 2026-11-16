@@ -82,7 +82,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeContent(
+internal fun HomeContent(
     state: HomeUiState,
     onItemClick: (Long) -> Unit,
     onNavigateToInventory: () -> Unit,

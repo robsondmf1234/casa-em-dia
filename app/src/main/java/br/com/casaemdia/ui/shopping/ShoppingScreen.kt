@@ -69,7 +69,7 @@ fun ShoppingScreen(
 }
 
 @Composable
-private fun ShoppingContent(
+internal fun ShoppingContent(
     state: ShoppingUiState,
     onAddManual: (String, String) -> Unit,
     onAddSuggestion: (InventoryItem) -> Unit,
