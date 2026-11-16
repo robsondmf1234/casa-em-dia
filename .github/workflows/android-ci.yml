@@ -1,0 +1,33 @@
+name: Android CI
+
+on:
+  # 1. Roda quando um PR é aberto, sincronizado ou reaberto tendo como ALVO a main ou develop
+  pull_request:
+    branches: [ "main", "develop" ]
+
+  # 2.  Roda quando um código é "mergeado" diretamente na main (um merge é interpretado como um push)
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: ./gradlew assembleDebug
+
+      - name: Run tests
+        run: ./gradlew test
