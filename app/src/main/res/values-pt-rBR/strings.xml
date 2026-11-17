@@ -130,4 +130,13 @@
     <string name="location_bathroom">Banheiro</string>
     <string name="location_laundry">Lavanderia</string>
     <string name="location_other">Outro</string>
+
+    <!-- Autenticação / Login -->
+    <string name="login_title">Bem-vindo ao Casa em Dia</string>
+    <string name="login_subtitle">Faça login com sua conta do Google para sincronizar e organizar sua despensa.</string>
+    <string name="sign_in_with_google">Entrar com o Google</string>
+    <string name="signing_in">Entrando…</string>
+    <string name="sign_out">Sair</string>
+    <string name="signed_in_as">Conectado como %1$s</string>
+    <string name="login_failed">Falha ao realizar login com o Google. Tente novamente.</string>
 </resources>
