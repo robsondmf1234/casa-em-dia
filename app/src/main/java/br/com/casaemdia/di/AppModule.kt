@@ -2,12 +2,15 @@ package br.com.casaemdia.di
 
 import androidx.room.Room
 import br.com.casaemdia.data.local.AppDatabase
+import br.com.casaemdia.data.repository.AuthRepositoryImpl
 import br.com.casaemdia.data.repository.InventoryRepositoryImpl
 import br.com.casaemdia.data.repository.ShoppingRepositoryImpl
+import br.com.casaemdia.domain.repository.AuthRepository
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
+import br.com.casaemdia.ui.viewmodel.AuthViewModel
 import br.com.casaemdia.ui.viewmodel.EditItemViewModel
 import br.com.casaemdia.ui.viewmodel.HomeViewModel
 import br.com.casaemdia.ui.viewmodel.InventoryViewModel
@@ -24,10 +27,12 @@ val appModule = module {
     single { get<AppDatabase>().shoppingDao() }
     single<InventoryRepository> { InventoryRepositoryImpl(get()) }
     single<ShoppingRepository> { ShoppingRepositoryImpl(get()) }
+    single<AuthRepository> { AuthRepositoryImpl() }
     single<Clock> { Clock.systemDefaultZone() }
     factory { AddSuggestionToShoppingList(get()) }
     factory { SetItemPurchased(get(), get()) }
 
+    viewModel { AuthViewModel(get()) }
     viewModel { HomeViewModel(get(), get()) }
     viewModel { InventoryViewModel(get(), get()) }
     viewModel { params -> EditItemViewModel(params.get<Long>().takeIf { it >= 0 }, get(), get()) }

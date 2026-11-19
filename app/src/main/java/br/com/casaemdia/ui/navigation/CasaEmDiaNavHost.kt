@@ -43,6 +43,7 @@ import androidx.navigation.navArgument
 import br.com.casaemdia.R
 import br.com.casaemdia.ui.details.ItemDetailsScreen
 import br.com.casaemdia.ui.edit.EditItemScreen
+import br.com.casaemdia.ui.login.LoginScreen
 import android.content.res.Configuration
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
@@ -62,6 +63,7 @@ import br.com.casaemdia.ui.viewmodel.ShoppingUiState
 import java.time.LocalDate
 
 object Routes {
+    const val LOGIN = "login"
     const val HOME = "home"
     const val INVENTORY = "inventory"
     const val SHOPPING = "shopping"
@@ -107,6 +109,15 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
     val idArg = listOf(navArgument(Routes.ITEM_ID) { type = NavType.LongType })
 
     NavHost(navController, startDestination = Routes.HOME) {
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Routes.HOME) {
             TabScaffold(Tab.Home, navController, showBrandHeader = true) { modifier ->
                 HomeScreen(

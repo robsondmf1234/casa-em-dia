@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.cred.core)
+    implementation(libs.androidx.cred.play.services)
+    implementation(libs.google.identity.googleid)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)

@@ -87,7 +87,8 @@ flowchart TD
 - Mapear possíveis efeitos colaterais e riscos de quebra (migrações de Room, navegação, previews ou testes existentes).
 
 ### Passo 2: Elaboração do Plano de Implantação
-- **OBRIGATÓRIO:** Criar e/ou atualizar o arquivo temporário de plano de implantação (`implementation_plan.artifact.md`) sempre que planejar mudanças a serem feitas.
+- **MANDATÓRIO & OBRIGATÓRIO:** Criar e/ou atualizar o arquivo temporário de plano de implantação (`implementation_plan.artifact.md`) sempre que qualquer alteração, criação ou refatoração for solicitada.
+- O plano serve para exibir detalhadamente todas as alterações e aplicações que serão realizadas no código, para que o usuário possa analisar, avaliar o impacto e tomar uma decisão informada antes da aprovação.
 O plano deve ser estruturado e conter:
 1. **Objetivo:** Descrição clara do que será feito e por quê.
 2. **Arquivos Afetados:** Lista completa com caminho de cada arquivo a ser criado, alterado ou excluído.
