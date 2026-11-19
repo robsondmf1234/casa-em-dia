@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -135,7 +136,7 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
             }
         }
         composable(Routes.INVENTORY) {
-            TabScaffold(Tab.Inventory, navController, titleText = "Meus itens", onAdd = addItem) { modifier ->
+            TabScaffold(Tab.Inventory, navController, titleText = stringResource(R.string.inventory_title), onAdd = addItem) { modifier ->
                 InventoryScreen(onItemClick = openDetails, onAddItem = addItem, modifier = modifier)
             }
         }
@@ -199,14 +200,14 @@ private fun TabScaffold(
                 },
                 actions = {
                     if (showBrandHeader) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .size(24.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
+                        IconButton(onClick = { }) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.nav_settings),
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -334,7 +335,7 @@ private fun TabScaffoldInventoryPreview() {
         TabScaffold(
             current = Tab.Inventory,
             navController = rememberNavController(),
-            titleText = "Meus itens",
+            titleText = stringResource(R.string.inventory_title),
             onAdd = {},
         ) { modifier ->
             InventoryContent(

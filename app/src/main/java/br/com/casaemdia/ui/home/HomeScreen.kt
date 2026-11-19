@@ -124,8 +124,8 @@ internal fun HomeContent(
                         count = state.lowStock.size,
                         label = stringResource(R.string.home_low_stock_short),
                         icon = Icons.Filled.Error,
-                        containerColor = Color(0xFFFFF3DB),
-                        contentColor = Color(0xFFE65100),
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                         onClick = onNavigateToInventory,
                         modifier = Modifier.weight(1f),
                     )
@@ -133,8 +133,8 @@ internal fun HomeContent(
                         count = state.expiring.size,
                         label = stringResource(R.string.home_expiring_short),
                         icon = Icons.Filled.CalendarMonth,
-                        containerColor = Color(0xFFFFEAEA),
-                        contentColor = DangerRed,
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
                         onClick = onNavigateToInventory,
                         modifier = Modifier.weight(1f),
                     )
@@ -209,7 +209,7 @@ private fun TotalItemsCard(
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE2F0E2)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
@@ -220,7 +220,7 @@ private fun TotalItemsCard(
                 imageVector = Icons.Filled.Home,
                 contentDescription = null,
                 modifier = Modifier.size(36.dp),
-                tint = Green40,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
@@ -228,19 +228,19 @@ private fun TotalItemsCard(
                     text = totalItems.toString(),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Green40,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
                     text = stringResource(R.string.home_items_at_home),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = Green40,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = Green40,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
     }
@@ -333,7 +333,7 @@ private fun CategoryCard(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "$count itens",
+                    text = stringResource(R.string.home_category_count_format, count),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -157,10 +157,10 @@ private fun EditForm(
     val numberKeyboard = KeyboardOptions(keyboardType = KeyboardType.Decimal)
     val numberError = stringResource(R.string.error_number_invalid)
     val fieldColors = OutlinedTextFieldDefaults.colors(
-        focusedContainerColor = Color.White,
-        unfocusedContainerColor = Color.White,
-        disabledContainerColor = Color.White,
-        errorContainerColor = Color.White,
+        focusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        disabledContainerColor = MaterialTheme.colorScheme.surface,
+        errorContainerColor = MaterialTheme.colorScheme.surface,
     )
 
     Column(modifier.fillMaxSize()) {
@@ -236,7 +236,7 @@ private fun EditForm(
                         onClick = { showDatePicker = true },
                         modifier = Modifier.weight(1f).height(56.dp),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface),
                     ) {
                         Icon(Icons.Filled.CalendarMonth, contentDescription = null)
                         Text(
@@ -351,10 +351,10 @@ private fun <T> EditOptionSelector(
             onValueChange = {},
             readOnly = true,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                errorContainerColor = Color.White,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                errorContainerColor = MaterialTheme.colorScheme.surface,
             ),
             placeholder = { Text(label) },
             leadingIcon = leadingIcon,

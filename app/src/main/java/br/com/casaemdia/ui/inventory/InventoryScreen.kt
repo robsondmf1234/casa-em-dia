@@ -16,6 +16,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -38,7 +39,6 @@ import br.com.casaemdia.ui.components.ItemCard
 import br.com.casaemdia.ui.components.LoadingState
 import br.com.casaemdia.ui.components.labelRes
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
-import br.com.casaemdia.ui.theme.Green40
 import br.com.casaemdia.ui.viewmodel.InventoryUiState
 import br.com.casaemdia.ui.viewmodel.InventoryViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -81,8 +81,8 @@ fun InventoryContent(
         else -> Column(modifier) {
             OutlinedTextField(
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xFFE2F0E2),
-                    unfocusedContainerColor = Color(0xFFE2F0E2),
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     disabledBorderColor = Color.Transparent,
@@ -123,10 +123,10 @@ fun InventoryContent(
                         label = { Text(stringResource(R.string.inventory_filter_all)) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Green40,
-                            selectedLabelColor = Color.White,
-                            containerColor = Color(0xFFE2F0E2),
-                            labelColor = Green40,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
@@ -144,10 +144,10 @@ fun InventoryContent(
                         label = { Text(stringResource(category.labelRes())) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Green40,
-                            selectedLabelColor = Color.White,
-                            containerColor = Color(0xFFE2F0E2),
-                            labelColor = Green40,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,
@@ -165,10 +165,10 @@ fun InventoryContent(
                         label = { Text(stringResource(R.string.inventory_filter_low_stock)) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Green40,
-                            selectedLabelColor = Color.White,
-                            containerColor = Color(0xFFE2F0E2),
-                            labelColor = Green40,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                         border = FilterChipDefaults.filterChipBorder(
                             enabled = true,

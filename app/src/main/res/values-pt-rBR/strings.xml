@@ -131,6 +131,9 @@
     <string name="location_laundry">Lavanderia</string>
     <string name="location_other">Outro</string>
 
+    <string name="home_category_count_format">%1$d itens</string>
+    <string name="nav_settings">Configurações</string>
+
     <!-- Autenticação / Login -->
     <string name="login_title">Bem-vindo ao Casa em Dia</string>
     <string name="login_subtitle">Faça login com sua conta do Google para sincronizar e organizar sua despensa.</string>

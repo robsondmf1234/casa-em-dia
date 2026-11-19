@@ -2,6 +2,7 @@ package br.com.casaemdia.di
 
 import androidx.room.Room
 import br.com.casaemdia.data.local.AppDatabase
+import br.com.casaemdia.data.local.MIGRATION_1_2
 import br.com.casaemdia.data.repository.AuthRepositoryImpl
 import br.com.casaemdia.data.repository.InventoryRepositoryImpl
 import br.com.casaemdia.data.repository.ShoppingRepositoryImpl
@@ -22,7 +23,11 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    single { Room.databaseBuilder(androidContext(), AppDatabase::class.java, "casa_em_dia.db").build() }
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "casa_em_dia.db")
+            .addMigrations(MIGRATION_1_2)
+            .build()
+    }
     single { get<AppDatabase>().inventoryDao() }
     single { get<AppDatabase>().shoppingDao() }
     single<InventoryRepository> { InventoryRepositoryImpl(get()) }

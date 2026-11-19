@@ -1,6 +1,7 @@
 package br.com.casaemdia.data.local
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
@@ -9,7 +10,13 @@ import br.com.casaemdia.domain.model.StorageLocation
 import br.com.casaemdia.domain.model.UnitType
 import java.time.LocalDate
 
-@Entity(tableName = "inventory_items")
+@Entity(
+    tableName = "inventory_items",
+    indices = [
+        Index(value = ["category"]),
+        Index(value = ["expirationEpochDay"]),
+    ],
+)
 data class InventoryItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
@@ -22,7 +29,12 @@ data class InventoryItemEntity(
     val notes: String,
 )
 
-@Entity(tableName = "shopping_items")
+@Entity(
+    tableName = "shopping_items",
+    indices = [
+        Index(value = ["inventoryItemId"]),
+    ],
+)
 data class ShoppingItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
