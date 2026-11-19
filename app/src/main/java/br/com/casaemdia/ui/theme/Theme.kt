@@ -32,7 +32,13 @@ private val LightColors = lightColorScheme(
     surface = Color.White,
     onSurface = Color(0xFF191C19),
     surfaceVariant = Color(0xFFE6F0E3),
+    onSurfaceVariant = Color(0xFF424940),
+    tertiary = Color(0xFFE65100),
+    tertiaryContainer = Color(0xFFFFF3DB),
+    onTertiaryContainer = Color(0xFFE65100),
     error = DangerRed,
+    errorContainer = Color(0xFFFFEAEA),
+    onErrorContainer = Color(0xFFC62828),
 )
 
 private val DarkColors = darkColorScheme(
@@ -46,7 +52,13 @@ private val DarkColors = darkColorScheme(
     surface = Color(0xFF1A1F1A),
     onSurface = Color(0xFFE1E3DE),
     surfaceVariant = Color(0xFF2B352B),
+    onSurfaceVariant = Color(0xFFC2C9BF),
+    tertiary = Color(0xFFFFB784),
+    tertiaryContainer = Color(0xFF4A2800),
+    onTertiaryContainer = Color(0xFFFFDCBE),
     error = Color(0xFFEF9A9A),
+    errorContainer = Color(0xFF531111),
+    onErrorContainer = Color(0xFFFFDAD6),
 )
 
 private val AppTypography = Typography(

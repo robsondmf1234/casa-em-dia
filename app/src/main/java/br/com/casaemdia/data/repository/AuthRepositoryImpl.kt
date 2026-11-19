@@ -5,6 +5,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import br.com.casaemdia.BuildConfig
 import br.com.casaemdia.domain.model.AuthState
 import br.com.casaemdia.domain.model.UserSession
 import br.com.casaemdia.domain.repository.AuthRepository
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class AuthRepositoryImpl(
-    private val webClientId: String = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+    private val webClientId: String = BuildConfig.WEB_CLIENT_ID
 ) : AuthRepository {
 
     private val authStateFlow = MutableStateFlow<AuthState>(AuthState.Unauthenticated)

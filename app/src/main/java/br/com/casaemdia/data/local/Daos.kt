@@ -47,9 +47,17 @@ interface ShoppingDao {
     suspend fun deletePurchased()
 }
 
+val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+    override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_inventory_items_category` ON `inventory_items` (`category`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_inventory_items_expirationEpochDay` ON `inventory_items` (`expirationEpochDay`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_shopping_items_inventoryItemId` ON `shopping_items` (`inventoryItemId`)")
+    }
+}
+
 @Database(
     entities = [InventoryItemEntity::class, ShoppingItemEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
