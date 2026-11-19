@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,8 +50,15 @@ fun InventoryScreen(
     onItemClick: (Long) -> Unit,
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
+    filterLowStock: Boolean = false,
     viewModel: InventoryViewModel = koinViewModel(),
 ) {
+    LaunchedEffect(filterLowStock) {
+        if (filterLowStock) {
+            viewModel.setLowStockFilter(true)
+        }
+    }
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     InventoryContent(
         state = state,

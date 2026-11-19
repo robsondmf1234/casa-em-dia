@@ -67,12 +67,15 @@ object Routes {
     const val LOGIN = "login"
     const val HOME = "home"
     const val INVENTORY = "inventory"
+    const val FILTER_LOW_STOCK = "filterLowStock"
+    const val INVENTORY_ROUTE = "inventory?filterLowStock={$FILTER_LOW_STOCK}"
     const val SHOPPING = "shopping"
     const val ITEM_ID = "itemId"
     const val NEW_ITEM_ID = -1L
     const val DETAILS = "details/{$ITEM_ID}"
     const val EDIT = "edit/{$ITEM_ID}"
 
+    fun inventory(filterLowStock: Boolean = false) = "inventory?filterLowStock=$filterLowStock"
     fun details(id: Long) = "details/$id"
     fun edit(id: Long) = "edit/$id"
 }
@@ -131,13 +134,34 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
                             restoreState = true
                         }
                     },
+                    onNavigateToLowStock = {
+                        navController.navigate(Routes.inventory(filterLowStock = true)) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     modifier = modifier,
                 )
             }
         }
-        composable(Routes.INVENTORY) {
+        composable(
+            route = Routes.INVENTORY_ROUTE,
+            arguments = listOf(
+                navArgument(Routes.FILTER_LOW_STOCK) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { entry ->
+            val filterLowStock = entry.arguments?.getBoolean(Routes.FILTER_LOW_STOCK) ?: false
             TabScaffold(Tab.Inventory, navController, titleText = stringResource(R.string.inventory_title), onAdd = addItem) { modifier ->
-                InventoryScreen(onItemClick = openDetails, onAddItem = addItem, modifier = modifier)
+                InventoryScreen(
+                    onItemClick = openDetails,
+                    onAddItem = addItem,
+                    filterLowStock = filterLowStock,
+                    modifier = modifier,
+                )
             }
         }
         composable(Routes.SHOPPING) {

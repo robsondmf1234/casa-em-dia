@@ -66,6 +66,7 @@ fun HomeScreen(
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToInventory: () -> Unit = {},
+    onNavigateToLowStock: () -> Unit = onNavigateToInventory,
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -79,7 +80,13 @@ fun HomeScreen(
             actionLabel = stringResource(R.string.home_add_first_item),
             onAction = onAddItem,
         )
-        else -> HomeContent(state, onItemClick, onNavigateToInventory, modifier)
+        else -> HomeContent(
+            state = state,
+            onItemClick = onItemClick,
+            onNavigateToInventory = onNavigateToInventory,
+            onNavigateToLowStock = onNavigateToLowStock,
+            modifier = modifier,
+        )
     }
 }
 
@@ -88,6 +95,7 @@ internal fun HomeContent(
     state: HomeUiState,
     onItemClick: (Long) -> Unit,
     onNavigateToInventory: () -> Unit,
+    onNavigateToLowStock: () -> Unit = onNavigateToInventory,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -126,7 +134,7 @@ internal fun HomeContent(
                         icon = Icons.Filled.Error,
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        onClick = onNavigateToInventory,
+                        onClick = onNavigateToLowStock,
                         modifier = Modifier.weight(1f),
                     )
                     StatSubCard(
