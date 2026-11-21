@@ -144,3 +144,14 @@ class FakeAuthRepository(
         authState.value = br.com.casaemdia.domain.model.AuthState.Unauthenticated
     }
 }
+
+class FakeSettingsRepository(
+    initial: br.com.casaemdia.domain.model.ThemeMode = br.com.casaemdia.domain.model.ThemeMode.SYSTEM,
+) : br.com.casaemdia.domain.repository.SettingsRepository {
+    private val state = MutableStateFlow(initial)
+    override val themeMode: kotlinx.coroutines.flow.StateFlow<br.com.casaemdia.domain.model.ThemeMode> = state
+
+    override suspend fun setThemeMode(mode: br.com.casaemdia.domain.model.ThemeMode) {
+        state.value = mode
+    }
+}

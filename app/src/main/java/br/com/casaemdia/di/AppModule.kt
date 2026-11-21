@@ -1,5 +1,6 @@
 package br.com.casaemdia.di
 
+import android.content.Context
 import androidx.room.Room
 import br.com.casaemdia.data.local.AppDatabase
 import br.com.casaemdia.data.local.MIGRATION_1_2
@@ -7,10 +8,12 @@ import br.com.casaemdia.data.repository.AuthRepositoryImpl
 import br.com.casaemdia.data.repository.CredentialManagerGoogleProvider
 import br.com.casaemdia.data.repository.InventoryRepositoryImpl
 import br.com.casaemdia.data.repository.RoomTransactionRunner
+import br.com.casaemdia.data.repository.SettingsRepositoryImpl
 import br.com.casaemdia.data.repository.ShoppingRepositoryImpl
 import br.com.casaemdia.domain.repository.AuthRepository
 import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import br.com.casaemdia.domain.repository.InventoryRepository
+import br.com.casaemdia.domain.repository.SettingsRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
 import br.com.casaemdia.domain.repository.TransactionRunner
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
@@ -20,6 +23,7 @@ import br.com.casaemdia.ui.viewmodel.EditItemViewModel
 import br.com.casaemdia.ui.viewmodel.HomeViewModel
 import br.com.casaemdia.ui.viewmodel.InventoryViewModel
 import br.com.casaemdia.ui.viewmodel.ItemDetailsViewModel
+import br.com.casaemdia.ui.viewmodel.SettingsViewModel
 import br.com.casaemdia.ui.viewmodel.ShoppingViewModel
 import java.time.Clock
 import org.koin.android.ext.koin.androidContext
@@ -39,6 +43,9 @@ val appModule = module {
     single<TransactionRunner> { RoomTransactionRunner(get()) }
     single<AuthRepository> { AuthRepositoryImpl() }
     factory<GoogleCredentialProvider> { params -> CredentialManagerGoogleProvider(params.get()) }
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(androidContext().getSharedPreferences(SettingsRepositoryImpl.PREFS_NAME, Context.MODE_PRIVATE))
+    }
     single<Clock> { Clock.systemDefaultZone() }
     factory { AddSuggestionToShoppingList(get()) }
     factory { SetItemPurchased(get(), get(), get()) }
@@ -49,4 +56,5 @@ val appModule = module {
     viewModel { params -> EditItemViewModel(params.get<Long>().takeIf { it >= 0 }, get(), get()) }
     viewModel { params -> ItemDetailsViewModel(params.get<Long>(), get(), get(), get()) }
     viewModel { ShoppingViewModel(get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get()) }
 }
