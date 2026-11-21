@@ -70,6 +70,20 @@ class InventoryViewModel(
         lowStockOnly.value = !lowStockOnly.value
     }
 
+    fun setLowStockFilter(enabled: Boolean) {
+        lowStockOnly.value = enabled
+        if (enabled) {
+            category.value = null
+            query.value = ""
+        }
+    }
+
+    fun resetToAllFilters() {
+        lowStockOnly.value = false
+        category.value = null
+        query.value = ""
+    }
+
     fun retry() {
         reload.value++
     }

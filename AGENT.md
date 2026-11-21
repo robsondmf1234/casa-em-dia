@@ -65,6 +65,9 @@ Toda nova funcionalidade ou alteração deve respeitar rigorosamente a separaç�
 ### 3.5. Idioma de Comunicação do Agente
 - **MANDATÓRIO:** Toda e qualquer resposta, explicação, plano de implantação, relatório ou mensagem gerada pelo agente de IA para o usuário deve ser **obrigatoriamente em Português (Brasil)**.
 
+### 3.6. Cobertura de Testes para Novos Métodos
+- **MANDATÓRIO:** Sempre que criar ou adicionar um novo método, função ou caso de uso no projeto (em qualquer camada: Domain, Data, UseCases, ViewModels ou Mappers), é obrigatorio criar/adicionar o teste unitário correspondente a este método na pasta `src/test`.
+
 ---
 
 ## 4. Protocolo Obrigatório de Trabalho da IA

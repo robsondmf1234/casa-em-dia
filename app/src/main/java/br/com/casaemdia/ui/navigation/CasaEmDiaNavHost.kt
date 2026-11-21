@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -66,12 +67,15 @@ object Routes {
     const val LOGIN = "login"
     const val HOME = "home"
     const val INVENTORY = "inventory"
+    const val FILTER_LOW_STOCK = "filterLowStock"
+    const val INVENTORY_ROUTE = "inventory?filterLowStock={$FILTER_LOW_STOCK}"
     const val SHOPPING = "shopping"
     const val ITEM_ID = "itemId"
     const val NEW_ITEM_ID = -1L
     const val DETAILS = "details/{$ITEM_ID}"
     const val EDIT = "edit/{$ITEM_ID}"
 
+    fun inventory(filterLowStock: Boolean = false) = "inventory?filterLowStock=$filterLowStock"
     fun details(id: Long) = "details/$id"
     fun edit(id: Long) = "edit/$id"
 }
@@ -124,19 +128,41 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
                     onItemClick = openDetails,
                     onAddItem = addItem,
                     onNavigateToInventory = {
-                        navController.navigate(Routes.INVENTORY) {
+                        navController.navigate(Routes.inventory(filterLowStock = false)) {
                             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = false
+                        }
+                    },
+                    onNavigateToLowStock = {
+                        navController.navigate(Routes.inventory(filterLowStock = true)) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = false
                         }
                     },
                     modifier = modifier,
                 )
             }
         }
-        composable(Routes.INVENTORY) {
-            TabScaffold(Tab.Inventory, navController, titleText = "Meus itens", onAdd = addItem) { modifier ->
-                InventoryScreen(onItemClick = openDetails, onAddItem = addItem, modifier = modifier)
+        composable(
+            route = Routes.INVENTORY_ROUTE,
+            arguments = listOf(
+                navArgument(Routes.FILTER_LOW_STOCK) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { entry ->
+            val filterLowStock = entry.arguments?.getBoolean(Routes.FILTER_LOW_STOCK) ?: false
+            TabScaffold(Tab.Inventory, navController, titleText = stringResource(R.string.inventory_title), onAdd = addItem) { modifier ->
+                InventoryScreen(
+                    onItemClick = openDetails,
+                    onAddItem = addItem,
+                    filterLowStock = filterLowStock,
+                    navEntryId = entry.id,
+                    modifier = modifier,
+                )
             }
         }
         composable(Routes.SHOPPING) {
@@ -199,14 +225,14 @@ private fun TabScaffold(
                 },
                 actions = {
                     if (showBrandHeader) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .size(24.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
+                        IconButton(onClick = { }) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.nav_settings),
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -334,7 +360,7 @@ private fun TabScaffoldInventoryPreview() {
         TabScaffold(
             current = Tab.Inventory,
             navController = rememberNavController(),
-            titleText = "Meus itens",
+            titleText = stringResource(R.string.inventory_title),
             onAdd = {},
         ) { modifier ->
             InventoryContent(
