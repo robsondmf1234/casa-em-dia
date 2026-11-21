@@ -1,6 +1,7 @@
 package br.com.casaemdia.ui.navigation
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -8,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Inventory2
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Inventory2
@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -45,11 +44,14 @@ import br.com.casaemdia.R
 import br.com.casaemdia.ui.details.ItemDetailsScreen
 import br.com.casaemdia.ui.edit.EditItemScreen
 import br.com.casaemdia.ui.login.LoginScreen
+import br.com.casaemdia.ui.settings.SettingsMenu
+import br.com.casaemdia.ui.settings.SettingsMenuButton
 import android.content.res.Configuration
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.model.StorageLocation
+import br.com.casaemdia.domain.model.ThemeMode
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.ui.home.HomeContent
 import br.com.casaemdia.ui.home.HomeScreen
@@ -123,7 +125,12 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
             )
         }
         composable(Routes.HOME) {
-            TabScaffold(Tab.Home, navController, showBrandHeader = true) { modifier ->
+            TabScaffold(
+                current = Tab.Home,
+                navController = navController,
+                showBrandHeader = true,
+                actions = { SettingsMenuButton() },
+            ) { modifier ->
                 HomeScreen(
                     onItemClick = openDetails,
                     onAddItem = addItem,
@@ -191,6 +198,7 @@ private fun TabScaffold(
     showBrandHeader: Boolean = false,
     titleText: String? = null,
     onAdd: (() -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (Modifier) -> Unit,
 ) {
     Scaffold(
@@ -223,18 +231,7 @@ private fun TabScaffold(
                         )
                     }
                 },
-                actions = {
-                    if (showBrandHeader) {
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = stringResource(R.string.nav_settings),
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    }
-                },
+                actions = actions,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     scrolledContainerColor = MaterialTheme.colorScheme.background,
@@ -330,6 +327,7 @@ private fun TabScaffoldHomePreview() {
             current = Tab.Home,
             navController = rememberNavController(),
             showBrandHeader = true,
+            actions = { SettingsMenu(themeMode = ThemeMode.SYSTEM, onThemeModeSelected = {}) },
         ) { modifier ->
             HomeContent(
                 state = HomeUiState(

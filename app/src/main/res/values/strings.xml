@@ -133,6 +133,15 @@
 
     <string name="home_category_count_format">%1$d itens</string>
     <string name="nav_settings">Configurações</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_title">Escolher tema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_theme_system">Padrão do sistema</string>
+    <string name="settings_about">Sobre o app</string>
+    <string name="settings_about_description">Controle o estoque da casa, as datas de validade e a lista de compras.</string>
+    <string name="settings_about_version">Versão %1$s</string>
+    <string name="settings_close">Fechar</string>
 
     <!-- Autenticação / Login -->
     <string name="login_title">Bem-vindo ao Casa em Dia</string>
