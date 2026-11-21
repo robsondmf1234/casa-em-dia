@@ -60,7 +60,7 @@ class ShoppingViewModel(
         }
     }
 
-    fun togglePurchased(item: ShoppingItem) = launchAction { setPurchased(item, !item.purchased) }
+    fun togglePurchased(item: ShoppingItem) = launchAction { setPurchased(item.id, !item.purchased) }
 
     fun addSuggestion(item: InventoryItem) = launchAction { addSuggestionToList(item) }
 

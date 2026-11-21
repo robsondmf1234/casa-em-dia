@@ -1,10 +1,9 @@
 package br.com.casaemdia.ui.viewmodel
 
-import android.content.Context
 import br.com.casaemdia.domain.model.AuthState
+import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import br.com.casaemdia.testing.FakeAuthRepository
 import br.com.casaemdia.testing.MainDispatcherRule
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -22,7 +21,7 @@ class AuthViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val mockContext = mockk<Context>(relaxed = true)
+    private val provider = GoogleCredentialProvider { error("FakeAuthRepository does not call the provider") }
 
     @Test
     fun initialStateIsUnauthenticatedAndIdle() = runTest {
@@ -44,7 +43,7 @@ class AuthViewModelTest {
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.authState.collect {} }
 
-        vm.signInWithGoogle(mockContext)
+        vm.signInWithGoogle(provider)
 
         assertFalse(vm.loginUiState.value.isLoading)
         assertEquals("teste@casaemdia.com", vm.loginUiState.value.userSession?.email)
@@ -56,7 +55,7 @@ class AuthViewModelTest {
         val repo = FakeAuthRepository().apply { shouldFailSignIn = true }
         val vm = AuthViewModel(repo)
 
-        vm.signInWithGoogle(mockContext)
+        vm.signInWithGoogle(provider)
 
         assertFalse(vm.loginUiState.value.isLoading)
         assertEquals("Erro ao realizar login", vm.loginUiState.value.errorMessage)
@@ -70,7 +69,7 @@ class AuthViewModelTest {
 
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.authState.collect {} }
 
-        vm.signInWithGoogle(mockContext)
+        vm.signInWithGoogle(provider)
         assertTrue(vm.authState.value is AuthState.Authenticated)
 
         vm.signOut()
@@ -83,7 +82,7 @@ class AuthViewModelTest {
         val repo = FakeAuthRepository().apply { shouldFailSignIn = true }
         val vm = AuthViewModel(repo)
 
-        vm.signInWithGoogle(mockContext)
+        vm.signInWithGoogle(provider)
         assertEquals("Erro ao realizar login", vm.loginUiState.value.errorMessage)
 
         vm.clearError()

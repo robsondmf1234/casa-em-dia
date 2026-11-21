@@ -5,6 +5,7 @@ import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
+import br.com.casaemdia.domain.repository.TransactionRunner
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -57,15 +58,23 @@ class AddSuggestionToShoppingList(private val shopping: ShoppingRepository) {
         )
 }
 
-/** Marks an item as purchased and, when linked to the inventory, restocks it. */
+/**
+ * Marks a shopping entry as purchased (or not) and, when linked to the inventory, restocks it.
+ *
+ * The current state is read from the repository inside a transaction, so repeated calls with the
+ * same value (double taps, stale UI state) are no-ops and never restock the inventory twice.
+ */
 class SetItemPurchased(
     private val shopping: ShoppingRepository,
     private val inventory: InventoryRepository,
+    private val transaction: TransactionRunner,
 ) {
-    suspend operator fun invoke(item: ShoppingItem, purchased: Boolean) {
-        shopping.setPurchased(item.id, purchased)
-        val linked = item.inventoryItemId?.let { inventory.getItem(it) } ?: return
-        val delta = if (purchased) item.quantity else -item.quantity
+    suspend operator fun invoke(itemId: Long, purchased: Boolean) = transaction.run {
+        val current = shopping.getItem(itemId) ?: return@run
+        if (current.purchased == purchased) return@run
+        shopping.setPurchased(itemId, purchased)
+        val linked = current.inventoryItemId?.let { inventory.getItem(it) } ?: return@run
+        val delta = if (purchased) current.quantity else -current.quantity
         inventory.save(linked.copy(quantity = maxOf(0.0, linked.quantity + delta)))
     }
 }

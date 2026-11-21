@@ -6,6 +6,7 @@ import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
+import br.com.casaemdia.domain.repository.TransactionRunner
 import java.io.IOException
 import java.time.Clock
 import java.time.LocalDate
@@ -110,6 +111,11 @@ class FakeShoppingRepository(initial: List<ShoppingItem> = emptyList()) : Shoppi
     }
 }
 
+/** Runs the block directly; the in-memory fakes need no real transaction. */
+object ImmediateTransactionRunner : TransactionRunner {
+    override suspend fun <R> run(block: suspend () -> R): R = block()
+}
+
 class FakeAuthRepository(
     initialState: br.com.casaemdia.domain.model.AuthState = br.com.casaemdia.domain.model.AuthState.Unauthenticated
 ) : br.com.casaemdia.domain.repository.AuthRepository {
@@ -118,7 +124,9 @@ class FakeAuthRepository(
 
     override fun observeAuthState(): Flow<br.com.casaemdia.domain.model.AuthState> = authState
 
-    override suspend fun signInWithGoogle(context: android.content.Context): Result<br.com.casaemdia.domain.model.UserSession> {
+    override suspend fun signInWithGoogle(
+        provider: br.com.casaemdia.domain.repository.GoogleCredentialProvider,
+    ): Result<br.com.casaemdia.domain.model.UserSession> {
         return if (shouldFailSignIn) {
             Result.failure(RuntimeException("Erro ao realizar login"))
         } else {

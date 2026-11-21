@@ -7,6 +7,7 @@ import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
+import br.com.casaemdia.domain.repository.TransactionRunner
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
 import br.com.casaemdia.domain.usecase.expirationStatus
@@ -15,6 +16,9 @@ import br.com.casaemdia.domain.usecase.lowStock
 import br.com.casaemdia.domain.usecase.nearingExpiration
 import br.com.casaemdia.domain.usecase.parseQuantity
 import br.com.casaemdia.domain.usecase.suggestShoppingItems
+import br.com.casaemdia.testing.FakeInventoryRepository
+import br.com.casaemdia.testing.FakeShoppingRepository
+import br.com.casaemdia.testing.ImmediateTransactionRunner
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -22,7 +26,9 @@ import io.mockk.slot
 import java.time.LocalDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class UseCasesTest {
@@ -107,30 +113,81 @@ class UseCasesTest {
         assertEquals(4.0, captured.captured.quantity, 0.0)
     }
 
+    private fun setPurchasedFixture(entry: ShoppingItem, stock: Double = 1.0): Triple<FakeShoppingRepository, FakeInventoryRepository, SetItemPurchased> {
+        val shopping = FakeShoppingRepository(listOf(entry))
+        val inventory = FakeInventoryRepository(listOf(item(7, quantity = stock)))
+        return Triple(shopping, inventory, SetItemPurchased(shopping, inventory, ImmediateTransactionRunner))
+    }
+
+    private val linkedEntry = ShoppingItem(id = 3, name = "Arroz", quantity = 4.0, unit = UnitType.KG, inventoryItemId = 7)
+
     @Test
     fun setPurchased_restocksLinkedInventoryItem() = runTest {
-        val shopping = mockk<ShoppingRepository>(relaxed = true)
-        val inventory = mockk<InventoryRepository>()
-        val saved = slot<InventoryItem>()
-        coEvery { inventory.getItem(7) } returns item(7, quantity = 1.0)
-        coEvery { inventory.save(capture(saved)) } returns 7L
-        val entry = ShoppingItem(id = 3, name = "Arroz", quantity = 4.0, unit = UnitType.KG, inventoryItemId = 7)
+        val (shopping, inventory, setPurchased) = setPurchasedFixture(linkedEntry)
 
-        SetItemPurchased(shopping, inventory)(entry, true)
+        setPurchased(3, true)
 
-        coVerify { shopping.setPurchased(3, true) }
-        assertEquals(5.0, saved.captured.quantity, 0.0)
+        assertTrue(shopping.getItem(3)!!.purchased)
+        assertEquals(5.0, inventory.getItem(7)!!.quantity, 0.0)
+    }
+
+    @Test
+    fun setPurchased_sameValueTwiceRestocksOnlyOnce() = runTest {
+        val (_, inventory, setPurchased) = setPurchasedFixture(linkedEntry)
+
+        setPurchased(3, true)
+        setPurchased(3, true)
+
+        assertEquals(5.0, inventory.getItem(7)!!.quantity, 0.0)
+    }
+
+    @Test
+    fun setPurchased_uncheckingRevertsRestock() = runTest {
+        val (shopping, inventory, setPurchased) = setPurchasedFixture(linkedEntry)
+
+        setPurchased(3, true)
+        setPurchased(3, false)
+        setPurchased(3, false)
+
+        assertFalse(shopping.getItem(3)!!.purchased)
+        assertEquals(1.0, inventory.getItem(7)!!.quantity, 0.0)
+    }
+
+    @Test
+    fun setPurchased_unknownEntryDoesNothing() = runTest {
+        val (_, inventory, setPurchased) = setPurchasedFixture(linkedEntry)
+
+        setPurchased(99, true)
+
+        assertEquals(1.0, inventory.getItem(7)!!.quantity, 0.0)
+    }
+
+    @Test
+    fun setPurchased_runsInsideTransaction() = runTest {
+        val shopping = FakeShoppingRepository(listOf(linkedEntry))
+        val inventory = FakeInventoryRepository(listOf(item(7, quantity = 1.0)))
+        var transactions = 0
+        val runner = object : TransactionRunner {
+            override suspend fun <R> run(block: suspend () -> R): R {
+                transactions++
+                return block()
+            }
+        }
+
+        SetItemPurchased(shopping, inventory, runner)(3, true)
+
+        assertEquals(1, transactions)
     }
 
     @Test
     fun setPurchased_withoutLinkOnlyUpdatesList() = runTest {
-        val shopping = mockk<ShoppingRepository>(relaxed = true)
-        val inventory = mockk<InventoryRepository>()
         val entry = ShoppingItem(id = 3, name = "Café", quantity = 1.0, unit = UnitType.PACK)
+        val shopping = FakeShoppingRepository(listOf(entry))
+        val inventory = mockk<InventoryRepository>()
 
-        SetItemPurchased(shopping, inventory)(entry, true)
+        SetItemPurchased(shopping, inventory, ImmediateTransactionRunner)(3, true)
 
-        coVerify { shopping.setPurchased(3, true) }
+        assertTrue(shopping.getItem(3)!!.purchased)
         coVerify(exactly = 0) { inventory.save(any()) }
     }
 }
