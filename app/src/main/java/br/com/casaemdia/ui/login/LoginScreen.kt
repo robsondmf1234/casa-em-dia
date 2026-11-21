@@ -40,7 +40,10 @@ import br.com.casaemdia.R
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
 import br.com.casaemdia.ui.viewmodel.AuthViewModel
 import br.com.casaemdia.ui.viewmodel.LoginUiState
+import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun LoginScreen(
@@ -50,6 +53,7 @@ fun LoginScreen(
 ) {
     val state by viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val credentialProvider = koinInject<GoogleCredentialProvider> { parametersOf(context) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.userSession) {
@@ -71,7 +75,7 @@ fun LoginScreen(
     ) { innerPadding ->
         LoginContent(
             state = state,
-            onGoogleSignInClick = { viewModel.signInWithGoogle(context) },
+            onGoogleSignInClick = { viewModel.signInWithGoogle(credentialProvider) },
             modifier = Modifier.padding(innerPadding)
         )
     }

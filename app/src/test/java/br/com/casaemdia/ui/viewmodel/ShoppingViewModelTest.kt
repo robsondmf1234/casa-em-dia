@@ -6,6 +6,7 @@ import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
 import br.com.casaemdia.testing.FakeInventoryRepository
 import br.com.casaemdia.testing.FakeShoppingRepository
+import br.com.casaemdia.testing.ImmediateTransactionRunner
 import br.com.casaemdia.testing.MainDispatcherRule
 import br.com.casaemdia.testing.inventoryItem
 import kotlinx.coroutines.launch
@@ -40,7 +41,7 @@ class ShoppingViewModelTest {
             inventory,
             shopping,
             AddSuggestionToShoppingList(shopping),
-            SetItemPurchased(shopping, inventory),
+            SetItemPurchased(shopping, inventory, ImmediateTransactionRunner),
         )
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
         return vm
@@ -64,6 +65,18 @@ class ShoppingViewModelTest {
 
         assertEquals(listOf(1L, 2L), vm.uiState.value.purchased.map { it.id }.sorted())
         assertEquals(2.0, inventory.getItem(1)!!.quantity, 0.0)
+    }
+
+    @Test
+    fun togglingWithStaleItemTwiceRestocksOnlyOnce() = runTest {
+        val vm = viewModel()
+        val stale = vm.uiState.value.pending.single()
+
+        vm.togglePurchased(stale)
+        vm.togglePurchased(stale)
+
+        assertEquals(2.0, inventory.getItem(1)!!.quantity, 0.0)
+        assertTrue(shopping.getItem(1)!!.purchased)
     }
 
     @Test

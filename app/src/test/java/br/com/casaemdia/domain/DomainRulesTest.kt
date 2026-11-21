@@ -10,6 +10,7 @@ import br.com.casaemdia.domain.usecase.suggestShoppingItems
 import br.com.casaemdia.domain.usecase.suggestedPurchaseQuantity
 import br.com.casaemdia.testing.FakeInventoryRepository
 import br.com.casaemdia.testing.FakeShoppingRepository
+import br.com.casaemdia.testing.ImmediateTransactionRunner
 import br.com.casaemdia.testing.TODAY
 import br.com.casaemdia.testing.inventoryItem
 import kotlinx.coroutines.test.runTest
@@ -73,7 +74,7 @@ class DomainRulesTest {
         val shopping = FakeShoppingRepository(listOf(entry))
         val inventory = FakeInventoryRepository(listOf(inventoryItem(7, quantity = 5.0)))
 
-        SetItemPurchased(shopping, inventory)(entry, false)
+        SetItemPurchased(shopping, inventory, ImmediateTransactionRunner)(entry.id, false)
 
         assertFalse(shopping.items.value.single().purchased)
         assertEquals(3.0, inventory.getItem(7)!!.quantity, 0.0)
@@ -84,7 +85,7 @@ class DomainRulesTest {
         val entry = ShoppingItem(id = 3, name = "Arroz", quantity = 4.0, unit = UnitType.KG, purchased = true, inventoryItemId = 7)
         val inventory = FakeInventoryRepository(listOf(inventoryItem(7, quantity = 1.0)))
 
-        SetItemPurchased(FakeShoppingRepository(listOf(entry)), inventory)(entry, false)
+        SetItemPurchased(FakeShoppingRepository(listOf(entry)), inventory, ImmediateTransactionRunner)(entry.id, false)
 
         assertEquals(0.0, inventory.getItem(7)!!.quantity, 0.0)
     }
@@ -95,7 +96,7 @@ class DomainRulesTest {
         val shopping = FakeShoppingRepository(listOf(entry))
         val inventory = FakeInventoryRepository()
 
-        SetItemPurchased(shopping, inventory)(entry, true)
+        SetItemPurchased(shopping, inventory, ImmediateTransactionRunner)(entry.id, true)
 
         assertTrue(shopping.items.value.single().purchased)
         assertTrue(inventory.items.value.isEmpty())

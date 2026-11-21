@@ -1,11 +1,11 @@
 package br.com.casaemdia.ui.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.casaemdia.domain.model.AuthState
 import br.com.casaemdia.domain.model.UserSession
 import br.com.casaemdia.domain.repository.AuthRepository
+import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,10 +33,10 @@ class AuthViewModel(
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
 
-    fun signInWithGoogle(context: Context) {
+    fun signInWithGoogle(provider: GoogleCredentialProvider) {
         viewModelScope.launch {
             _loginUiState.value = LoginUiState(isLoading = true)
-            authRepository.signInWithGoogle(context)
+            authRepository.signInWithGoogle(provider)
                 .onSuccess { session ->
                     _loginUiState.value = LoginUiState(isLoading = false, userSession = session)
                 }

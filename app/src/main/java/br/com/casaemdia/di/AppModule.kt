@@ -4,11 +4,15 @@ import androidx.room.Room
 import br.com.casaemdia.data.local.AppDatabase
 import br.com.casaemdia.data.local.MIGRATION_1_2
 import br.com.casaemdia.data.repository.AuthRepositoryImpl
+import br.com.casaemdia.data.repository.CredentialManagerGoogleProvider
 import br.com.casaemdia.data.repository.InventoryRepositoryImpl
+import br.com.casaemdia.data.repository.RoomTransactionRunner
 import br.com.casaemdia.data.repository.ShoppingRepositoryImpl
 import br.com.casaemdia.domain.repository.AuthRepository
+import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
+import br.com.casaemdia.domain.repository.TransactionRunner
 import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
 import br.com.casaemdia.ui.viewmodel.AuthViewModel
@@ -32,10 +36,12 @@ val appModule = module {
     single { get<AppDatabase>().shoppingDao() }
     single<InventoryRepository> { InventoryRepositoryImpl(get()) }
     single<ShoppingRepository> { ShoppingRepositoryImpl(get()) }
+    single<TransactionRunner> { RoomTransactionRunner(get()) }
     single<AuthRepository> { AuthRepositoryImpl() }
+    factory<GoogleCredentialProvider> { params -> CredentialManagerGoogleProvider(params.get()) }
     single<Clock> { Clock.systemDefaultZone() }
     factory { AddSuggestionToShoppingList(get()) }
-    factory { SetItemPurchased(get(), get()) }
+    factory { SetItemPurchased(get(), get(), get()) }
 
     viewModel { AuthViewModel(get()) }
     viewModel { HomeViewModel(get(), get()) }
