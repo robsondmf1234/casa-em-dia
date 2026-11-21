@@ -51,11 +51,14 @@ fun InventoryScreen(
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
     filterLowStock: Boolean = false,
+    navEntryId: String? = null,
     viewModel: InventoryViewModel = koinViewModel(),
 ) {
-    LaunchedEffect(filterLowStock) {
+    LaunchedEffect(navEntryId, filterLowStock) {
         if (filterLowStock) {
             viewModel.setLowStockFilter(true)
+        } else {
+            viewModel.resetToAllFilters()
         }
     }
 

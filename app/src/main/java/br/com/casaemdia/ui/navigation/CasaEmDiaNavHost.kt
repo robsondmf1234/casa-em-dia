@@ -128,17 +128,17 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
                     onItemClick = openDetails,
                     onAddItem = addItem,
                     onNavigateToInventory = {
-                        navController.navigate(Routes.INVENTORY) {
+                        navController.navigate(Routes.inventory(filterLowStock = false)) {
                             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = false
                         }
                     },
                     onNavigateToLowStock = {
                         navController.navigate(Routes.inventory(filterLowStock = true)) {
                             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = false
                         }
                     },
                     modifier = modifier,
@@ -160,6 +160,7 @@ fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController())
                     onItemClick = openDetails,
                     onAddItem = addItem,
                     filterLowStock = filterLowStock,
+                    navEntryId = entry.id,
                     modifier = modifier,
                 )
             }
