@@ -22,7 +22,7 @@ Se houver qualquer dúvida sobre o que implementar (escopo, comportamento, texto
 ./gradlew testDebugUnitTest --tests "br.com.casaemdia.ui.viewmodel.HomeViewModelTest.updatesWhenInventoryChanges"  # um teste
 ```
 
-O build precisa de `app/google-services.json` (baixado do console do Firebase; está no `.gitignore` e nunca deve ser commitado). O plugin `com.google.gms.google-services` gera dele o recurso `R.string.default_web_client_id`, usado no login com Google. A impressão SHA-1/SHA-256 da chave de assinatura precisa estar cadastrada no app Android do Firebase, senão o arquivo vem sem os clientes OAuth e o login falha.
+O build precisa de `app/google-services.json` (baixado do console do Firebase; está no `.gitignore` e nunca deve ser commitado). O plugin `com.google.gms.google-services` gera dele o recurso `R.string.default_web_client_id`, usado no login com Google. A impressão SHA-1/SHA-256 da chave de assinatura precisa estar cadastrada no app Android do Firebase, senão o arquivo vem sem os clientes OAuth e o login falha. No CI (`.github/workflows/android-ci.yml`), a Action copia o `app/google-services.ci.json` (fictício, commitado) para `app/google-services.json` antes do build; o login não funciona nesse APK, mas o build e os testes passam.
 
 Só existem testes unitários na JVM (JUnit 4, MockK, kotlinx-coroutines-test). Não há testes instrumentados nem ferramenta de lint/formatação configurada.
 
