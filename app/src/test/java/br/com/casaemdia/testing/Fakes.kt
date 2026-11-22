@@ -6,7 +6,6 @@ import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.model.UnitType
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
-import br.com.casaemdia.domain.repository.TransactionRunner
 import java.io.IOException
 import java.time.Clock
 import java.time.LocalDate
@@ -29,7 +28,7 @@ val TODAY: LocalDate = LocalDate.of(2025, 1, 10)
 val FIXED_CLOCK: Clock = Clock.fixed(TODAY.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneOffset.UTC)
 
 fun inventoryItem(
-    id: Long = 1,
+    id: String = "1",
     name: String = "Arroz",
     category: Category = Category.FOOD,
     quantity: Double = 5.0,
@@ -57,50 +56,66 @@ class FakeInventoryRepository(initial: List<InventoryItem> = emptyList()) : Inve
     val items = MutableStateFlow(initial)
     var failObserve = false
     var failWrites = false
-    private var nextId = (initial.maxOfOrNull { it.id } ?: 0) + 1
+    private var nextId = initial.size + 1
 
     override fun observeItems(): Flow<List<InventoryItem>> = if (failObserve) failingFlow() else items
 
-    override fun observeItem(id: Long): Flow<InventoryItem?> =
+    override fun observeItem(id: String): Flow<InventoryItem?> =
         if (failObserve) failingFlow() else items.map { list -> list.firstOrNull { it.id == id } }
 
-    override suspend fun getItem(id: Long): InventoryItem? = items.value.firstOrNull { it.id == id }
+    override suspend fun getItem(id: String): InventoryItem? = items.value.firstOrNull { it.id == id }
 
-    override suspend fun save(item: InventoryItem): Long {
+    override suspend fun save(item: InventoryItem): String {
         if (failWrites) throw IOException("write error")
-        val stored = if (item.id == 0L) item.copy(id = nextId++) else item
+        val stored = if (item.id.isEmpty()) item.copy(id = "inv-${nextId++}") else item
         items.value = items.value.filter { it.id != stored.id } + stored
         return stored.id
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: String) {
         if (failWrites) throw IOException("write error")
         items.value = items.value.filter { it.id != id }
     }
+
+    /** Usado pelo [FakeShoppingRepository] para simular o incremento atômico do Firestore. */
+    fun addToQuantity(id: String, delta: Double) {
+        items.value = items.value.map { if (it.id == id) it.copy(quantity = it.quantity + delta) else it }
+    }
 }
 
-class FakeShoppingRepository(initial: List<ShoppingItem> = emptyList()) : ShoppingRepository {
+/**
+ * Lista de compras em memória. Com [inventory], [setPurchased] também aplica o ajuste de estoque,
+ * como o lote do Firestore faz em produção.
+ */
+class FakeShoppingRepository(
+    initial: List<ShoppingItem> = emptyList(),
+    private val inventory: FakeInventoryRepository? = null,
+) : ShoppingRepository {
     val items = MutableStateFlow(initial)
     var failWrites = false
-    private var nextId = (initial.maxOfOrNull { it.id } ?: 0) + 1
+    var setPurchasedCalls = 0
+        private set
+    private var nextId = initial.size + 1
 
     override fun observeItems(): Flow<List<ShoppingItem>> = items
 
-    override suspend fun getItem(id: Long): ShoppingItem? = items.value.firstOrNull { it.id == id }
+    override suspend fun getItem(id: String): ShoppingItem? = items.value.firstOrNull { it.id == id }
 
-    override suspend fun add(item: ShoppingItem): Long {
+    override suspend fun add(item: ShoppingItem): String {
         if (failWrites) throw IOException("write error")
-        val stored = if (item.id == 0L) item.copy(id = nextId++) else item
+        val stored = if (item.id.isEmpty()) item.copy(id = "shop-${nextId++}") else item
         items.value = items.value.filter { it.id != stored.id } + stored
         return stored.id
     }
 
-    override suspend fun setPurchased(id: Long, purchased: Boolean) {
+    override suspend fun setPurchased(id: String, purchased: Boolean, inventoryItemId: String?, stockDelta: Double) {
         if (failWrites) throw IOException("write error")
+        setPurchasedCalls++
         items.value = items.value.map { if (it.id == id) it.copy(purchased = purchased) else it }
+        if (inventoryItemId != null) inventory?.addToQuantity(inventoryItemId, stockDelta)
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: String) {
         if (failWrites) throw IOException("write error")
         items.value = items.value.filter { it.id != id }
     }
@@ -109,11 +124,6 @@ class FakeShoppingRepository(initial: List<ShoppingItem> = emptyList()) : Shoppi
         if (failWrites) throw IOException("write error")
         items.value = items.value.filter { !it.purchased }
     }
-}
-
-/** Runs the block directly; the in-memory fakes need no real transaction. */
-object ImmediateTransactionRunner : TransactionRunner {
-    override suspend fun <R> run(block: suspend () -> R): R = block()
 }
 
 class FakeAuthRepository(

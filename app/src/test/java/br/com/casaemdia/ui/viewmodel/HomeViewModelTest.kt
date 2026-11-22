@@ -21,9 +21,9 @@ class HomeViewModelTest {
     fun summarizesTotalLowStockAndExpiring() = runTest {
         val repo = FakeInventoryRepository(
             listOf(
-                inventoryItem(1, quantity = 0.0),
-                inventoryItem(2, quantity = 10.0, expires = TODAY.plusDays(2)),
-                inventoryItem(3, quantity = 10.0, expires = TODAY.plusDays(60)),
+                inventoryItem("1", quantity = 0.0),
+                inventoryItem("2", quantity = 10.0, expires = TODAY.plusDays(2)),
+                inventoryItem("3", quantity = 10.0, expires = TODAY.plusDays(60)),
             ),
         )
         val vm = HomeViewModel(repo, FIXED_CLOCK)
@@ -33,8 +33,8 @@ class HomeViewModelTest {
         assertFalse(state.isLoading)
         assertEquals(TODAY, state.today)
         assertEquals(3, state.totalItems)
-        assertEquals(listOf(1L), state.lowStock.map { it.id })
-        assertEquals(listOf(2L), state.expiring.map { it.id })
+        assertEquals(listOf("1"), state.lowStock.map { it.id })
+        assertEquals(listOf("2"), state.expiring.map { it.id })
     }
 
     @Test
@@ -44,7 +44,7 @@ class HomeViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
         assertEquals(0, vm.uiState.value.totalItems)
 
-        repo.save(inventoryItem(id = 0, quantity = 0.0))
+        repo.save(inventoryItem(id = "0", quantity = 0.0))
 
         assertEquals(1, vm.uiState.value.totalItems)
         assertEquals(1, vm.uiState.value.lowStock.size)
@@ -52,7 +52,7 @@ class HomeViewModelTest {
 
     @Test
     fun showsErrorAndRecoversOnRetry() = runTest {
-        val repo = FakeInventoryRepository(listOf(inventoryItem(1))).apply { failObserve = true }
+        val repo = FakeInventoryRepository(listOf(inventoryItem("1"))).apply { failObserve = true }
         val vm = HomeViewModel(repo, FIXED_CLOCK)
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
         assertTrue(vm.uiState.value.hasError)
@@ -62,5 +62,20 @@ class HomeViewModelTest {
 
         assertFalse(vm.uiState.value.hasError)
         assertEquals(1, vm.uiState.value.totalItems)
+    }
+
+    @Test
+    fun recentItemsAreTheNewestByCreationTime() = runTest {
+        val repo = FakeInventoryRepository(
+            listOf(
+                inventoryItem("a", name = "Antigo").copy(createdAt = 100),
+                inventoryItem("b", name = "Novo").copy(createdAt = 300),
+                inventoryItem("c", name = "Meio").copy(createdAt = 200),
+            ),
+        )
+        val vm = HomeViewModel(repo, FIXED_CLOCK)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
+
+        assertEquals(listOf("b", "c", "a"), vm.uiState.value.recentItems.map { it.id })
     }
 }

@@ -29,7 +29,7 @@ data class ItemDetailsUiState(
 private data class Actions(val deleted: Boolean, val addedToShopping: Boolean, val failed: Boolean)
 
 class ItemDetailsViewModel(
-    private val itemId: Long,
+    private val itemId: String,
     private val inventory: InventoryRepository,
     private val addToShopping: AddSuggestionToShoppingList,
     private val clock: Clock,

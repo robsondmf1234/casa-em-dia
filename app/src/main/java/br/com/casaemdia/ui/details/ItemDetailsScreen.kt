@@ -64,9 +64,9 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetailsScreen(
-    itemId: Long,
+    itemId: String,
     onBack: () -> Unit,
-    onEdit: (Long) -> Unit,
+    onEdit: (String) -> Unit,
     viewModel: ItemDetailsViewModel = koinViewModel(parameters = { parametersOf(itemId) }),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -210,7 +210,7 @@ private fun DetailRow(label: String, value: String) {
 private fun ItemDetailsScreenPreview() {
     val today = LocalDate.now()
     val sampleItem = InventoryItem(
-        id = 1,
+        id = "1",
         name = "Azeite de Oliva Extra Virgem 500ml",
         category = Category.FOOD,
         quantity = 1.0,

@@ -6,7 +6,6 @@ import br.com.casaemdia.domain.usecase.AddSuggestionToShoppingList
 import br.com.casaemdia.domain.usecase.SetItemPurchased
 import br.com.casaemdia.testing.FakeInventoryRepository
 import br.com.casaemdia.testing.FakeShoppingRepository
-import br.com.casaemdia.testing.ImmediateTransactionRunner
 import br.com.casaemdia.testing.MainDispatcherRule
 import br.com.casaemdia.testing.inventoryItem
 import kotlinx.coroutines.launch
@@ -24,16 +23,17 @@ class ShoppingViewModelTest {
 
     private val inventory = FakeInventoryRepository(
         listOf(
-            inventoryItem(1, "Arroz", quantity = 0.0, min = 1.0),
-            inventoryItem(2, "Feijão", quantity = 0.0, min = 1.0),
-            inventoryItem(3, "Café", quantity = 10.0),
+            inventoryItem("1", "Arroz", quantity = 0.0, min = 1.0),
+            inventoryItem("2", "Feijão", quantity = 0.0, min = 1.0),
+            inventoryItem("3", "Café", quantity = 10.0),
         ),
     )
     private val shopping = FakeShoppingRepository(
         listOf(
-            ShoppingItem(id = 1, name = "Arroz", quantity = 2.0, unit = UnitType.KG, inventoryItemId = 1),
-            ShoppingItem(id = 2, name = "Pão", quantity = 1.0, unit = UnitType.UNIT, purchased = true),
+            ShoppingItem(id = "1", name = "Arroz", quantity = 2.0, unit = UnitType.KG, inventoryItemId = "1"),
+            ShoppingItem(id = "2", name = "Pão", quantity = 1.0, unit = UnitType.UNIT, purchased = true),
         ),
+        inventory,
     )
 
     private fun TestScope.viewModel(): ShoppingViewModel {
@@ -41,7 +41,7 @@ class ShoppingViewModelTest {
             inventory,
             shopping,
             AddSuggestionToShoppingList(shopping),
-            SetItemPurchased(shopping, inventory, ImmediateTransactionRunner),
+            SetItemPurchased(shopping, inventory),
         )
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
         return vm
@@ -52,9 +52,9 @@ class ShoppingViewModelTest {
         val state = viewModel().uiState.value
 
         assertFalse(state.isLoading)
-        assertEquals(listOf(1L), state.pending.map { it.id })
-        assertEquals(listOf(2L), state.purchased.map { it.id })
-        assertEquals(listOf(2L), state.suggestions.map { it.id })
+        assertEquals(listOf("1"), state.pending.map { it.id })
+        assertEquals(listOf("2"), state.purchased.map { it.id })
+        assertEquals(listOf("2"), state.suggestions.map { it.id })
     }
 
     @Test
@@ -63,8 +63,8 @@ class ShoppingViewModelTest {
 
         vm.togglePurchased(vm.uiState.value.pending.single())
 
-        assertEquals(listOf(1L, 2L), vm.uiState.value.purchased.map { it.id }.sorted())
-        assertEquals(2.0, inventory.getItem(1)!!.quantity, 0.0)
+        assertEquals(listOf("1", "2"), vm.uiState.value.purchased.map { it.id }.sorted())
+        assertEquals(2.0, inventory.getItem("1")!!.quantity, 0.0)
     }
 
     @Test
@@ -75,8 +75,8 @@ class ShoppingViewModelTest {
         vm.togglePurchased(stale)
         vm.togglePurchased(stale)
 
-        assertEquals(2.0, inventory.getItem(1)!!.quantity, 0.0)
-        assertTrue(shopping.getItem(1)!!.purchased)
+        assertEquals(2.0, inventory.getItem("1")!!.quantity, 0.0)
+        assertTrue(shopping.getItem("1")!!.purchased)
     }
 
     @Test
@@ -98,7 +98,7 @@ class ShoppingViewModelTest {
         vm.addAllSuggestions()
 
         assertTrue(vm.uiState.value.suggestions.isEmpty())
-        assertEquals(setOf(1L, 2L), vm.uiState.value.pending.mapNotNull { it.inventoryItemId }.toSet())
+        assertEquals(setOf("1", "2"), vm.uiState.value.pending.mapNotNull { it.inventoryItemId }.toSet())
     }
 
     @Test

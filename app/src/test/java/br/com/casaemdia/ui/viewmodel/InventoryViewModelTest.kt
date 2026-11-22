@@ -20,9 +20,9 @@ class InventoryViewModelTest {
 
     private val repo = FakeInventoryRepository(
         listOf(
-            inventoryItem(1, "Arroz", Category.FOOD, quantity = 0.0),
-            inventoryItem(2, "Feijão", Category.FOOD, quantity = 10.0),
-            inventoryItem(3, "Detergente", Category.CLEANING, quantity = 0.0),
+            inventoryItem("1", "Arroz", Category.FOOD, quantity = 0.0),
+            inventoryItem("2", "Feijão", Category.FOOD, quantity = 10.0),
+            inventoryItem("3", "Detergente", Category.CLEANING, quantity = 0.0),
         ),
     )
 
@@ -32,7 +32,7 @@ class InventoryViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
 
         assertFalse(vm.uiState.value.isLoading)
-        assertEquals(listOf(1L, 2L, 3L), vm.uiState.value.items.map { it.id })
+        assertEquals(listOf("1", "2", "3"), vm.uiState.value.items.map { it.id })
         assertEquals(3, vm.uiState.value.totalCount)
     }
 
@@ -42,16 +42,16 @@ class InventoryViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
 
         vm.onCategorySelected(Category.FOOD)
-        assertEquals(listOf(1L, 2L), vm.uiState.value.items.map { it.id })
+        assertEquals(listOf("1", "2"), vm.uiState.value.items.map { it.id })
 
         vm.onLowStockToggled()
         assertTrue(vm.uiState.value.lowStockOnly)
-        assertEquals(listOf(1L), vm.uiState.value.items.map { it.id })
+        assertEquals(listOf("1"), vm.uiState.value.items.map { it.id })
 
         vm.onCategorySelected(null)
         vm.onQueryChange("deter")
         assertEquals("deter", vm.uiState.value.query)
-        assertEquals(listOf(3L), vm.uiState.value.items.map { it.id })
+        assertEquals(listOf("3"), vm.uiState.value.items.map { it.id })
         assertEquals(3, vm.uiState.value.totalCount)
     }
 
@@ -79,7 +79,7 @@ class InventoryViewModelTest {
         assertTrue(vm.uiState.value.lowStockOnly)
         assertNull(vm.uiState.value.category)
         assertEquals("", vm.uiState.value.query)
-        assertEquals(listOf(1L, 3L), vm.uiState.value.items.map { it.id })
+        assertEquals(listOf("1", "3"), vm.uiState.value.items.map { it.id })
     }
 
     @Test

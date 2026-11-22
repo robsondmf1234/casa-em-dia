@@ -15,7 +15,7 @@ class EntityMappersTest {
     @Test
     fun inventoryItem_roundTripsThroughEntity() {
         val item = InventoryItem(
-            id = 4,
+            id = "4",
             name = "Leite",
             category = Category.FOOD,
             quantity = 2.5,
@@ -38,8 +38,8 @@ class EntityMappersTest {
     @Test
     fun inventoryEntity_unknownEnumValuesFallBackToDefaults() {
         val entity = InventoryItemEntity(
-            id = 1, name = "X", category = "PETS", quantity = 1.0, unit = "BOX",
-            minQuantity = 1.0, expirationEpochDay = null, location = "GARAGE", notes = "",
+            id = "1", name = "X", category = "PETS", quantity = 1.0, unit = "BOX",
+            minQuantity = 1.0, expirationEpochDay = null, location = "GARAGE", notes = "", createdAt = 0,
         )
         val item = entity.toDomain()
         assertEquals(Category.OTHER, item.category)
@@ -49,13 +49,13 @@ class EntityMappersTest {
 
     @Test
     fun shoppingItem_roundTripsThroughEntity() {
-        val item = ShoppingItem(id = 2, name = "Café", quantity = 3.0, unit = UnitType.PACK, purchased = true, inventoryItemId = 9)
+        val item = ShoppingItem(id = "2", name = "Café", quantity = 3.0, unit = UnitType.PACK, purchased = true, inventoryItemId = "9")
         assertEquals(item, item.toEntity().toDomain())
     }
 
     @Test
     fun shoppingEntity_unknownUnitFallsBackToUnit() {
-        val entity = ShoppingItemEntity(id = 1, name = "X", quantity = 1.0, unit = "DOZEN", purchased = false, inventoryItemId = null)
+        val entity = ShoppingItemEntity(id = "1", name = "X", quantity = 1.0, unit = "DOZEN", purchased = false, inventoryItemId = null)
         assertEquals(UnitType.UNIT, entity.toDomain().unit)
     }
 }

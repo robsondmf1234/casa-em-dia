@@ -62,7 +62,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
-    onItemClick: (Long) -> Unit,
+    onItemClick: (String) -> Unit,
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToInventory: () -> Unit = {},
@@ -93,7 +93,7 @@ fun HomeScreen(
 @Composable
 internal fun HomeContent(
     state: HomeUiState,
-    onItemClick: (Long) -> Unit,
+    onItemClick: (String) -> Unit,
     onNavigateToInventory: () -> Unit,
     onNavigateToLowStock: () -> Unit = onNavigateToInventory,
     modifier: Modifier = Modifier,
@@ -425,7 +425,7 @@ private fun HomeScreenPreview() {
     val today = LocalDate.now()
     val sampleItems = listOf(
         InventoryItem(
-            id = 1,
+            id = "1",
             name = "Detergente",
             category = Category.CLEANING,
             quantity = 2.0,
@@ -434,7 +434,7 @@ private fun HomeScreenPreview() {
             location = StorageLocation.KITCHEN,
         ),
         InventoryItem(
-            id = 2,
+            id = "2",
             name = "Macarrão",
             category = Category.FOOD,
             quantity = 3.0,
@@ -443,7 +443,7 @@ private fun HomeScreenPreview() {
             location = StorageLocation.PANTRY,
         ),
         InventoryItem(
-            id = 3,
+            id = "3",
             name = "Arroz",
             category = Category.FOOD,
             quantity = 5.0,

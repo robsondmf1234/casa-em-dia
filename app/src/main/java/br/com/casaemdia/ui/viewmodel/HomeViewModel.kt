@@ -48,7 +48,7 @@ class HomeViewModel(
                         lowStock = items.lowStock(),
                         expiring = items.nearingExpiration(today),
                         categoryCounts = counts,
-                        recentItems = items.sortedByDescending { it.id }.take(5),
+                        recentItems = items.sortedByDescending { it.createdAt }.take(5),
                     )
                 }
                 .catch { emit(HomeUiState(isLoading = false, hasError = true)) }

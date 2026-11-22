@@ -31,13 +31,15 @@ data class EditItemUiState(
     val expirationDate: LocalDate? = null,
     val location: StorageLocation = StorageLocation.PANTRY,
     val notes: String = "",
+    /** Preservado ao editar, para o item manter sua posição em "Últimos itens adicionados". */
+    val createdAt: Long = 0,
     val nameError: Boolean = false,
     val quantityError: Boolean = false,
     val minQuantityError: Boolean = false,
 )
 
 class EditItemViewModel(
-    private val itemId: Long?,
+    private val itemId: String?,
     private val inventory: InventoryRepository,
     private val clock: Clock,
 ) : ViewModel() {
@@ -51,7 +53,7 @@ class EditItemViewModel(
         if (itemId != null) load(itemId)
     }
 
-    private fun load(id: Long) {
+    private fun load(id: String) {
         viewModelScope.launch {
             val item = runCatching { inventory.getItem(id) }.getOrNull()
             _uiState.update {
@@ -68,6 +70,7 @@ class EditItemViewModel(
                         expirationDate = item.expirationDate,
                         location = item.location,
                         notes = item.notes,
+                        createdAt = item.createdAt,
                     )
                 }
             }
@@ -103,7 +106,8 @@ class EditItemViewModel(
             val result = runCatching {
                 inventory.save(
                     InventoryItem(
-                        id = itemId ?: 0,
+                        id = itemId.orEmpty(),
+                        createdAt = s.createdAt,
                         name = s.name.trim(),
                         category = s.category,
                         quantity = quantity,

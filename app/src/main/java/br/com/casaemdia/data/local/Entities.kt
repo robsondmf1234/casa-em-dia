@@ -18,7 +18,7 @@ import java.time.LocalDate
     ],
 )
 data class InventoryItemEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey val id: String,
     val name: String,
     val category: String,
     val quantity: Double,
@@ -27,6 +27,7 @@ data class InventoryItemEntity(
     val expirationEpochDay: Long?,
     val location: String,
     val notes: String,
+    val createdAt: Long,
 )
 
 @Entity(
@@ -36,12 +37,12 @@ data class InventoryItemEntity(
     ],
 )
 data class ShoppingItemEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey val id: String,
     val name: String,
     val quantity: Double,
     val unit: String,
     val purchased: Boolean,
-    val inventoryItemId: Long?,
+    val inventoryItemId: String?,
 )
 
 private inline fun <reified T : Enum<T>> String.toEnumOr(default: T): T =
@@ -57,6 +58,7 @@ fun InventoryItemEntity.toDomain() = InventoryItem(
     expirationDate = expirationEpochDay?.let(LocalDate::ofEpochDay),
     location = location.toEnumOr(StorageLocation.OTHER),
     notes = notes,
+    createdAt = createdAt,
 )
 
 fun InventoryItem.toEntity() = InventoryItemEntity(
@@ -69,6 +71,7 @@ fun InventoryItem.toEntity() = InventoryItemEntity(
     expirationEpochDay = expirationDate?.toEpochDay(),
     location = location.name,
     notes = notes,
+    createdAt = createdAt,
 )
 
 fun ShoppingItemEntity.toDomain() = ShoppingItem(
