@@ -1,0 +1,40 @@
+{
+  "_comment": "Arquivo FICTÍCIO usado só pelo CI (GitHub Actions) para o build compilar. Os valores não são de nenhum projeto real e o login não funciona com ele. Para rodar o app, use o google-services.json real baixado do console do Firebase (ignorado pelo git).",
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "casa-em-dia-ci",
+    "storage_bucket": "casa-em-dia-ci.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "android_client_info": {
+          "package_name": "br.com.casaemdia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "000000000000-ci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI-NAO-E-UMA-CHAVE-REAL-0000000000"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "000000000000-ci.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

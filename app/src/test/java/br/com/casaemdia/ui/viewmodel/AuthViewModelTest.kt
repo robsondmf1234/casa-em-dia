@@ -1,10 +1,11 @@
 package br.com.casaemdia.ui.viewmodel
 
 import br.com.casaemdia.domain.model.AuthState
+import br.com.casaemdia.domain.model.SignInCancelledException
+import br.com.casaemdia.domain.model.UserSession
 import br.com.casaemdia.domain.repository.GoogleCredentialProvider
 import br.com.casaemdia.testing.FakeAuthRepository
 import br.com.casaemdia.testing.MainDispatcherRule
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -15,32 +16,35 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val provider = GoogleCredentialProvider { error("FakeAuthRepository does not call the provider") }
+    private val provider = GoogleCredentialProvider { error("FakeAuthRepository não chama o provider") }
 
     @Test
     fun initialStateIsUnauthenticatedAndIdle() = runTest {
-        val repo = FakeAuthRepository()
-        val vm = AuthViewModel(repo)
-
+        val vm = AuthViewModel(FakeAuthRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.authState.collect {} }
 
         assertEquals(AuthState.Unauthenticated, vm.authState.value)
         assertFalse(vm.loginUiState.value.isLoading)
-        assertNull(vm.loginUiState.value.errorMessage)
+        assertFalse(vm.loginUiState.value.hasError)
         assertNull(vm.loginUiState.value.userSession)
     }
 
     @Test
-    fun signInWithGoogleSuccessUpdatesSessionAndState() = runTest {
-        val repo = FakeAuthRepository()
-        val vm = AuthViewModel(repo)
+    fun savedSessionIsAvailableBeforeAnyCollection() {
+        val saved = AuthState.Authenticated(UserSession(id = "u1", email = "a@b.com"))
+        val vm = AuthViewModel(FakeAuthRepository(saved))
 
+        assertEquals(saved, vm.authState.value)
+    }
+
+    @Test
+    fun signInWithGoogleSuccessUpdatesSessionAndState() = runTest {
+        val vm = AuthViewModel(FakeAuthRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.authState.collect {} }
 
         vm.signInWithGoogle(provider)
@@ -51,22 +55,29 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun signInWithGoogleFailureSetsErrorMessage() = runTest {
-        val repo = FakeAuthRepository().apply { shouldFailSignIn = true }
-        val vm = AuthViewModel(repo)
+    fun signInWithGoogleFailureFlagsError() = runTest {
+        val vm = AuthViewModel(FakeAuthRepository().apply { signInError = RuntimeException("falhou") })
 
         vm.signInWithGoogle(provider)
 
         assertFalse(vm.loginUiState.value.isLoading)
-        assertEquals("Erro ao realizar login", vm.loginUiState.value.errorMessage)
+        assertTrue(vm.loginUiState.value.hasError)
         assertNull(vm.loginUiState.value.userSession)
     }
 
     @Test
-    fun signOutResetsAuthState() = runTest {
-        val repo = FakeAuthRepository()
-        val vm = AuthViewModel(repo)
+    fun cancellingAccountPickerIsNotAnError() = runTest {
+        val vm = AuthViewModel(FakeAuthRepository().apply { signInError = SignInCancelledException() })
 
+        vm.signInWithGoogle(provider)
+
+        assertFalse(vm.loginUiState.value.isLoading)
+        assertFalse(vm.loginUiState.value.hasError)
+    }
+
+    @Test
+    fun signOutResetsAuthState() = runTest {
+        val vm = AuthViewModel(FakeAuthRepository())
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.authState.collect {} }
 
         vm.signInWithGoogle(provider)
@@ -78,14 +89,12 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun clearErrorResetsErrorMessage() = runTest {
-        val repo = FakeAuthRepository().apply { shouldFailSignIn = true }
-        val vm = AuthViewModel(repo)
+    fun errorShownClearsErrorFlag() = runTest {
+        val vm = AuthViewModel(FakeAuthRepository().apply { signInError = RuntimeException("falhou") })
 
         vm.signInWithGoogle(provider)
-        assertEquals("Erro ao realizar login", vm.loginUiState.value.errorMessage)
+        vm.errorShown()
 
-        vm.clearError()
-        assertNull(vm.loginUiState.value.errorMessage)
+        assertFalse(vm.loginUiState.value.hasError)
     }
 }

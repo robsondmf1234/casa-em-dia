@@ -62,10 +62,11 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let { error ->
-            snackbarHostState.showSnackbar(error)
-            viewModel.clearError()
+    val loginFailedMessage = stringResource(R.string.login_failed)
+    LaunchedEffect(state.hasError) {
+        if (state.hasError) {
+            snackbarHostState.showSnackbar(loginFailedMessage)
+            viewModel.errorShown()
         }
     }
 
