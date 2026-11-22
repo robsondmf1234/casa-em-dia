@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +49,7 @@ import br.com.casaemdia.ui.login.LoginScreen
 import br.com.casaemdia.ui.settings.SettingsMenu
 import br.com.casaemdia.ui.settings.SettingsMenuButton
 import android.content.res.Configuration
+import br.com.casaemdia.domain.model.AuthState
 import br.com.casaemdia.domain.model.Category
 import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.ShoppingItem
@@ -109,12 +112,31 @@ private enum class Tab(
 }
 
 @Composable
-fun CasaEmDiaNavHost(navController: NavHostController = rememberNavController()) {
+fun CasaEmDiaNavHost(
+    authState: AuthState,
+    navController: NavHostController = rememberNavController(),
+) {
+    // Com sessão salva o app abre direto na Home; sem sessão, no login.
+    val startDestination = remember {
+        if (authState is AuthState.Authenticated) Routes.HOME else Routes.LOGIN
+    }
+
+    // Ao sair da conta (ou se a sessão for revogada), volta para o login e limpa a pilha.
+    LaunchedEffect(authState) {
+        val onLogin = navController.currentDestination?.route == Routes.LOGIN
+        if (authState is AuthState.Unauthenticated && !onLogin) {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(navController.graph.id) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     val openDetails: (Long) -> Unit = { navController.navigate(Routes.details(it)) }
     val addItem: () -> Unit = { navController.navigate(Routes.edit(Routes.NEW_ITEM_ID)) }
     val idArg = listOf(navArgument(Routes.ITEM_ID) { type = NavType.LongType })
 
-    NavHost(navController, startDestination = Routes.HOME) {
+    NavHost(navController, startDestination = startDestination) {
         composable(Routes.LOGIN) {
             LoginScreen(
                 onLoginSuccess = {

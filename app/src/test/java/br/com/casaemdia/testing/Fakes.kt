@@ -117,31 +117,29 @@ object ImmediateTransactionRunner : TransactionRunner {
 }
 
 class FakeAuthRepository(
-    initialState: br.com.casaemdia.domain.model.AuthState = br.com.casaemdia.domain.model.AuthState.Unauthenticated
+    initialState: br.com.casaemdia.domain.model.AuthState = br.com.casaemdia.domain.model.AuthState.Unauthenticated,
 ) : br.com.casaemdia.domain.repository.AuthRepository {
-    val authState = MutableStateFlow(initialState)
-    var shouldFailSignIn = false
+    private val state = MutableStateFlow(initialState)
+    override val authState: kotlinx.coroutines.flow.StateFlow<br.com.casaemdia.domain.model.AuthState> = state
 
-    override fun observeAuthState(): Flow<br.com.casaemdia.domain.model.AuthState> = authState
+    /** Erro devolvido no próximo login; null = sucesso. */
+    var signInError: Throwable? = null
 
     override suspend fun signInWithGoogle(
         provider: br.com.casaemdia.domain.repository.GoogleCredentialProvider,
     ): Result<br.com.casaemdia.domain.model.UserSession> {
-        return if (shouldFailSignIn) {
-            Result.failure(RuntimeException("Erro ao realizar login"))
-        } else {
-            val user = br.com.casaemdia.domain.model.UserSession(
-                id = "user_123",
-                email = "teste@casaemdia.com",
-                displayName = "Usuário Teste"
-            )
-            authState.value = br.com.casaemdia.domain.model.AuthState.Authenticated(user)
-            Result.success(user)
-        }
+        signInError?.let { return Result.failure(it) }
+        val user = br.com.casaemdia.domain.model.UserSession(
+            id = "user_123",
+            email = "teste@casaemdia.com",
+            displayName = "Usuário Teste",
+        )
+        state.value = br.com.casaemdia.domain.model.AuthState.Authenticated(user)
+        return Result.success(user)
     }
 
     override suspend fun signOut() {
-        authState.value = br.com.casaemdia.domain.model.AuthState.Unauthenticated
+        state.value = br.com.casaemdia.domain.model.AuthState.Unauthenticated
     }
 }
 

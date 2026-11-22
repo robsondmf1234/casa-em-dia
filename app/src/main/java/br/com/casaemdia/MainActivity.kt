@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.casaemdia.domain.model.ThemeMode
 import br.com.casaemdia.ui.navigation.CasaEmDiaNavHost
 import br.com.casaemdia.ui.theme.CasaEmDiaTheme
+import br.com.casaemdia.ui.viewmodel.AuthViewModel
 import br.com.casaemdia.ui.viewmodel.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsViewModel: SettingsViewModel = koinViewModel()
             val settings by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            val authViewModel: AuthViewModel = koinViewModel()
+            val authState by authViewModel.authState.collectAsStateWithLifecycle()
             val darkTheme = when (settings.themeMode) {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
@@ -39,7 +42,7 @@ class MainActivity : ComponentActivity() {
             }
 
             CasaEmDiaTheme(darkTheme = darkTheme) {
-                CasaEmDiaNavHost()
+                CasaEmDiaNavHost(authState = authState)
             }
         }
     }

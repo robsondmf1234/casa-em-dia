@@ -142,6 +142,9 @@
     <string name="settings_about_description">Controle o estoque da casa, as datas de validade e a lista de compras.</string>
     <string name="settings_about_version">Versão %1$s</string>
     <string name="settings_close">Fechar</string>
+    <string name="settings_sign_out_title">Sair da conta?</string>
+    <string name="settings_sign_out_message">Você vai precisar entrar com o Google de novo para usar o app.</string>
+    <string name="settings_cancel">Cancelar</string>
 
     <!-- Autenticação / Login -->
     <string name="login_title">Bem-vindo ao Casa em Dia</string>

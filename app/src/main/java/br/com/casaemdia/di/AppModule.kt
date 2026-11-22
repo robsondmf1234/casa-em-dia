@@ -25,6 +25,7 @@ import br.com.casaemdia.ui.viewmodel.InventoryViewModel
 import br.com.casaemdia.ui.viewmodel.ItemDetailsViewModel
 import br.com.casaemdia.ui.viewmodel.SettingsViewModel
 import br.com.casaemdia.ui.viewmodel.ShoppingViewModel
+import com.google.firebase.auth.FirebaseAuth
 import java.time.Clock
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -41,7 +42,8 @@ val appModule = module {
     single<InventoryRepository> { InventoryRepositoryImpl(get()) }
     single<ShoppingRepository> { ShoppingRepositoryImpl(get()) }
     single<TransactionRunner> { RoomTransactionRunner(get()) }
-    single<AuthRepository> { AuthRepositoryImpl() }
+    single { FirebaseAuth.getInstance() }
+    single<AuthRepository> { AuthRepositoryImpl(get()) }
     factory<GoogleCredentialProvider> { params -> CredentialManagerGoogleProvider(params.get()) }
     single<SettingsRepository> {
         SettingsRepositoryImpl(androidContext().getSharedPreferences(SettingsRepositoryImpl.PREFS_NAME, Context.MODE_PRIVATE))
