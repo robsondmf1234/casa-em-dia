@@ -19,10 +19,10 @@ import org.junit.Test
 class ItemDetailsViewModelTest {
     @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
-    private val inventory = FakeInventoryRepository(listOf(inventoryItem(7, "Sabão", quantity = 0.0, min = 2.0)))
+    private val inventory = FakeInventoryRepository(listOf(inventoryItem("7", "Sabão", quantity = 0.0, min = 2.0)))
     private val shopping = FakeShoppingRepository()
 
-    private fun viewModel(id: Long = 7) =
+    private fun viewModel(id: String = "7") =
         ItemDetailsViewModel(id, inventory, AddSuggestionToShoppingList(shopping), FIXED_CLOCK)
 
     @Test
@@ -36,7 +36,7 @@ class ItemDetailsViewModelTest {
 
     @Test
     fun missingItemHasNoItem() = runTest {
-        val vm = viewModel(id = 99)
+        val vm = viewModel(id = "99")
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
 
         assertFalse(vm.uiState.value.isLoading)
@@ -63,7 +63,7 @@ class ItemDetailsViewModelTest {
 
         assertTrue(vm.uiState.value.addedToShopping)
         val entry = shopping.items.value.single()
-        assertEquals(7L, entry.inventoryItemId)
+        assertEquals("7", entry.inventoryItemId)
         assertEquals(4.0, entry.quantity, 0.0)
 
         vm.messageShown()

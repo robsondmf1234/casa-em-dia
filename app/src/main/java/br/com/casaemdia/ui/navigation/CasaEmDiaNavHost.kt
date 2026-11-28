@@ -76,13 +76,13 @@ object Routes {
     const val INVENTORY_ROUTE = "inventory?filterLowStock={$FILTER_LOW_STOCK}"
     const val SHOPPING = "shopping"
     const val ITEM_ID = "itemId"
-    const val NEW_ITEM_ID = -1L
+    const val NEW_ITEM_ID = "new"
     const val DETAILS = "details/{$ITEM_ID}"
     const val EDIT = "edit/{$ITEM_ID}"
 
     fun inventory(filterLowStock: Boolean = false) = "inventory?filterLowStock=$filterLowStock"
-    fun details(id: Long) = "details/$id"
-    fun edit(id: Long) = "edit/$id"
+    fun details(id: String) = "details/$id"
+    fun edit(id: String) = "edit/$id"
 }
 
 private enum class Tab(
@@ -132,9 +132,9 @@ fun CasaEmDiaNavHost(
         }
     }
 
-    val openDetails: (Long) -> Unit = { navController.navigate(Routes.details(it)) }
+    val openDetails: (String) -> Unit = { navController.navigate(Routes.details(it)) }
     val addItem: () -> Unit = { navController.navigate(Routes.edit(Routes.NEW_ITEM_ID)) }
-    val idArg = listOf(navArgument(Routes.ITEM_ID) { type = NavType.LongType })
+    val idArg = listOf(navArgument(Routes.ITEM_ID) { type = NavType.StringType })
 
     NavHost(navController, startDestination = startDestination) {
         composable(Routes.LOGIN) {
@@ -198,7 +198,7 @@ fun CasaEmDiaNavHost(
             TabScaffold(Tab.Shopping, navController) { modifier -> ShoppingScreen(modifier = modifier) }
         }
         composable(Routes.DETAILS, arguments = idArg) { entry ->
-            val id = entry.arguments?.getLong(Routes.ITEM_ID) ?: Routes.NEW_ITEM_ID
+            val id = entry.arguments?.getString(Routes.ITEM_ID) ?: Routes.NEW_ITEM_ID
             ItemDetailsScreen(
                 itemId = id,
                 onBack = { navController.popBackStack() },
@@ -206,7 +206,7 @@ fun CasaEmDiaNavHost(
             )
         }
         composable(Routes.EDIT, arguments = idArg) { entry ->
-            val id = entry.arguments?.getLong(Routes.ITEM_ID) ?: Routes.NEW_ITEM_ID
+            val id = entry.arguments?.getString(Routes.ITEM_ID) ?: Routes.NEW_ITEM_ID
             EditItemScreen(itemId = id, onBack = { navController.popBackStack() })
         }
     }
@@ -326,7 +326,7 @@ private fun TabScaffold(
 private fun TabScaffoldHomePreview() {
     val sampleItems = listOf(
         InventoryItem(
-            id = 1,
+            id = "1",
             name = "Detergente",
             category = Category.CLEANING,
             quantity = 2.0,
@@ -335,7 +335,7 @@ private fun TabScaffoldHomePreview() {
             location = StorageLocation.KITCHEN,
         ),
         InventoryItem(
-            id = 2,
+            id = "2",
             name = "Macarrão",
             category = Category.FOOD,
             quantity = 3.0,
@@ -388,7 +388,7 @@ private fun TabScaffoldInventoryPreview() {
                     isLoading = false,
                     items = listOf(
                         InventoryItem(
-                            id = 1,
+                            id = "1",
                             name = "Macarrão",
                             category = Category.FOOD,
                             quantity = 2.0,
@@ -396,7 +396,7 @@ private fun TabScaffoldInventoryPreview() {
                             minQuantity = 1.0,
                         ),
                         InventoryItem(
-                            id = 2,
+                            id = "2",
                             name = "Arroz",
                             category = Category.FOOD,
                             quantity = 1.0,
@@ -422,7 +422,7 @@ private fun TabScaffoldInventoryPreview() {
 @Composable
 private fun TabScaffoldShoppingPreview() {
     val sampleItem = InventoryItem(
-        id = 1,
+        id = "1",
         name = "Café Torrado 500g",
         category = Category.FOOD,
         quantity = 0.0,
@@ -430,11 +430,11 @@ private fun TabScaffoldShoppingPreview() {
         minQuantity = 1.0,
     )
     val pendingShopping = listOf(
-        ShoppingItem(id = 1, name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
-        ShoppingItem(id = 2, name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
+        ShoppingItem(id = "1", name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
+        ShoppingItem(id = "2", name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
     )
     val purchasedShopping = listOf(
-        ShoppingItem(id = 3, name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
+        ShoppingItem(id = "3", name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
     )
     CasaEmDiaTheme {
         TabScaffold(

@@ -10,8 +10,9 @@ enum class StorageLocation { PANTRY, FRIDGE, FREEZER, KITCHEN, BATHROOM, LAUNDRY
 
 enum class ExpirationStatus { NONE, OK, EXPIRING_SOON, EXPIRED }
 
+/** Id vazio = item ainda não salvo. Os ids são os ids dos documentos no Firestore. */
 data class InventoryItem(
-    val id: Long = 0,
+    val id: String = "",
     val name: String,
     val category: Category,
     val quantity: Double,
@@ -20,15 +21,17 @@ data class InventoryItem(
     val expirationDate: LocalDate? = null,
     val location: StorageLocation = StorageLocation.PANTRY,
     val notes: String = "",
+    /** Momento da criação (epoch millis), usado para listar os itens mais recentes. */
+    val createdAt: Long = 0,
 ) {
     val isLowStock: Boolean get() = quantity <= minQuantity
 }
 
 data class ShoppingItem(
-    val id: Long = 0,
+    val id: String = "",
     val name: String,
     val quantity: Double,
     val unit: UnitType,
     val purchased: Boolean = false,
-    val inventoryItemId: Long? = null,
+    val inventoryItemId: String? = null,
 )

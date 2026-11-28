@@ -47,7 +47,7 @@ import java.time.LocalDate
 
 @Composable
 fun InventoryScreen(
-    onItemClick: (Long) -> Unit,
+    onItemClick: (String) -> Unit,
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
     filterLowStock: Boolean = false,
@@ -82,7 +82,7 @@ fun InventoryContent(
     onCategorySelected: (Category?) -> Unit,
     onLowStockToggled: () -> Unit,
     onRetry: () -> Unit,
-    onItemClick: (Long) -> Unit,
+    onItemClick: (String) -> Unit,
     onAddItem: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -223,7 +223,7 @@ private fun InventoryScreenPreview() {
     val today = LocalDate.now()
     val sampleItems = listOf(
         InventoryItem(
-            id = 1,
+            id = "1",
             name = "Arroz Integral 5kg",
             category = Category.FOOD,
             quantity = 1.0,
@@ -233,7 +233,7 @@ private fun InventoryScreenPreview() {
             location = StorageLocation.PANTRY,
         ),
         InventoryItem(
-            id = 2,
+            id = "2",
             name = "Detergente Neutro",
             category = Category.CLEANING,
             quantity = 3.0,
@@ -243,7 +243,7 @@ private fun InventoryScreenPreview() {
             location = StorageLocation.KITCHEN,
         ),
         InventoryItem(
-            id = 3,
+            id = "3",
             name = "Sabonete Líquido",
             category = Category.PERSONAL_CARE,
             quantity = 0.0,

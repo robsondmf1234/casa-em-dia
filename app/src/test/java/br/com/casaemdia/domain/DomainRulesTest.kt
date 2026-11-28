@@ -10,7 +10,6 @@ import br.com.casaemdia.domain.usecase.suggestShoppingItems
 import br.com.casaemdia.domain.usecase.suggestedPurchaseQuantity
 import br.com.casaemdia.testing.FakeInventoryRepository
 import br.com.casaemdia.testing.FakeShoppingRepository
-import br.com.casaemdia.testing.ImmediateTransactionRunner
 import br.com.casaemdia.testing.TODAY
 import br.com.casaemdia.testing.inventoryItem
 import kotlinx.coroutines.test.runTest
@@ -45,18 +44,18 @@ class DomainRulesTest {
 
     @Test
     fun suggestions_emptyWhenNothingIsLowStock() {
-        val inventory = listOf(inventoryItem(1, quantity = 10.0), inventoryItem(2, quantity = 3.0))
+        val inventory = listOf(inventoryItem("1", quantity = 10.0), inventoryItem("2", quantity = 3.0))
         assertTrue(suggestShoppingItems(inventory, emptyList()).isEmpty())
     }
 
     @Test
     fun filterInventory_matchesNotesAndIgnoresSurroundingSpaces() {
         val list = listOf(
-            inventoryItem(1, "Arroz", notes = "integral"),
-            inventoryItem(2, "Feijão"),
+            inventoryItem("1", "Arroz", notes = "integral"),
+            inventoryItem("2", "Feijão"),
         )
-        assertEquals(listOf(1L), filterInventory(list, "  INTEGRAL ", null, false).map { it.id })
-        assertEquals(listOf(1L, 2L), filterInventory(list, "   ", null, false).map { it.id })
+        assertEquals(listOf("1"), filterInventory(list, "  INTEGRAL ", null, false).map { it.id })
+        assertEquals(listOf("1", "2"), filterInventory(list, "   ", null, false).map { it.id })
     }
 
     @Test
@@ -70,33 +69,33 @@ class DomainRulesTest {
 
     @Test
     fun setPurchased_unmarkingRemovesQuantityFromInventory() = runTest {
-        val entry = ShoppingItem(id = 3, name = "Arroz", quantity = 2.0, unit = UnitType.KG, purchased = true, inventoryItemId = 7)
-        val shopping = FakeShoppingRepository(listOf(entry))
-        val inventory = FakeInventoryRepository(listOf(inventoryItem(7, quantity = 5.0)))
+        val entry = ShoppingItem(id = "3", name = "Arroz", quantity = 2.0, unit = UnitType.KG, purchased = true, inventoryItemId = "7")
+        val inventory = FakeInventoryRepository(listOf(inventoryItem("7", quantity = 5.0)))
+        val shopping = FakeShoppingRepository(listOf(entry), inventory)
 
-        SetItemPurchased(shopping, inventory, ImmediateTransactionRunner)(entry.id, false)
+        SetItemPurchased(shopping, inventory)(entry.id, false)
 
         assertFalse(shopping.items.value.single().purchased)
-        assertEquals(3.0, inventory.getItem(7)!!.quantity, 0.0)
+        assertEquals(3.0, inventory.getItem("7")!!.quantity, 0.0)
     }
 
     @Test
     fun setPurchased_unmarkingNeverLeavesNegativeStock() = runTest {
-        val entry = ShoppingItem(id = 3, name = "Arroz", quantity = 4.0, unit = UnitType.KG, purchased = true, inventoryItemId = 7)
-        val inventory = FakeInventoryRepository(listOf(inventoryItem(7, quantity = 1.0)))
+        val entry = ShoppingItem(id = "3", name = "Arroz", quantity = 4.0, unit = UnitType.KG, purchased = true, inventoryItemId = "7")
+        val inventory = FakeInventoryRepository(listOf(inventoryItem("7", quantity = 1.0)))
 
-        SetItemPurchased(FakeShoppingRepository(listOf(entry)), inventory, ImmediateTransactionRunner)(entry.id, false)
+        SetItemPurchased(FakeShoppingRepository(listOf(entry), inventory), inventory)(entry.id, false)
 
-        assertEquals(0.0, inventory.getItem(7)!!.quantity, 0.0)
+        assertEquals(0.0, inventory.getItem("7")!!.quantity, 0.0)
     }
 
     @Test
     fun setPurchased_linkedToDeletedItemOnlyUpdatesList() = runTest {
-        val entry = ShoppingItem(id = 3, name = "Arroz", quantity = 1.0, unit = UnitType.KG, inventoryItemId = 99)
-        val shopping = FakeShoppingRepository(listOf(entry))
+        val entry = ShoppingItem(id = "3", name = "Arroz", quantity = 1.0, unit = UnitType.KG, inventoryItemId = "99")
         val inventory = FakeInventoryRepository()
+        val shopping = FakeShoppingRepository(listOf(entry), inventory)
 
-        SetItemPurchased(shopping, inventory, ImmediateTransactionRunner)(entry.id, true)
+        SetItemPurchased(shopping, inventory)(entry.id, true)
 
         assertTrue(shopping.items.value.single().purchased)
         assertTrue(inventory.items.value.isEmpty())
