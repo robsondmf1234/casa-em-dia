@@ -310,7 +310,7 @@ private fun StatusChipPreview() {
 private fun ExpirationChipPreview() {
     val today = LocalDate.now()
     val item = InventoryItem(
-        id = 1,
+        id = "1",
         name = "Leite",
         category = Category.FOOD,
         quantity = 2.0,
@@ -330,7 +330,7 @@ private fun ExpirationChipPreview() {
 private fun ItemCardPreview() {
     val today = LocalDate.now()
     val item = InventoryItem(
-        id = 1,
+        id = "1",
         name = "Arroz Integral",
         category = Category.FOOD,
         quantity = 1.0,

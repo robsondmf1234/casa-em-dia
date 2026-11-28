@@ -33,9 +33,9 @@ class EditItemViewModelTest {
     @Test
     fun loadsExistingItemFormattingNumbers() {
         val repo = FakeInventoryRepository(
-            listOf(inventoryItem(5, "Leite", quantity = 2.0, unit = UnitType.L, min = 1.5, expires = TODAY, notes = "x")),
+            listOf(inventoryItem("5", "Leite", quantity = 2.0, unit = UnitType.L, min = 1.5, expires = TODAY, notes = "x")),
         )
-        val vm = EditItemViewModel(5, repo, FIXED_CLOCK)
+        val vm = EditItemViewModel("5", repo, FIXED_CLOCK)
 
         val state = vm.uiState.value
         assertFalse(state.isLoading)
@@ -50,7 +50,7 @@ class EditItemViewModelTest {
 
     @Test
     fun missingItemIsReportedAsNotFound() {
-        val vm = EditItemViewModel(42, FakeInventoryRepository(), FIXED_CLOCK)
+        val vm = EditItemViewModel("42", FakeInventoryRepository(), FIXED_CLOCK)
 
         assertTrue(vm.uiState.value.notFound)
         assertFalse(vm.uiState.value.isLoading)
@@ -110,15 +110,16 @@ class EditItemViewModelTest {
 
     @Test
     fun savingExistingItemUpdatesItInPlace() {
-        val repo = FakeInventoryRepository(listOf(inventoryItem(5, "Arroz", quantity = 1.0)))
-        val vm = EditItemViewModel(5, repo, FIXED_CLOCK)
+        val repo = FakeInventoryRepository(listOf(inventoryItem("5", "Arroz", quantity = 1.0).copy(createdAt = 1234)))
+        val vm = EditItemViewModel("5", repo, FIXED_CLOCK)
 
         vm.onQuantityChange("8")
         vm.save()
 
         val saved = repo.items.value.single()
-        assertEquals(5L, saved.id)
+        assertEquals("5", saved.id)
         assertEquals(8.0, saved.quantity, 0.0)
+        assertEquals(1234L, saved.createdAt)
     }
 
     @Test

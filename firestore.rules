@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Regras do Firestore do Casa em Dia (projeto casa-em-dia-72501).
+// Cada pessoa só lê e grava os próprios dados, em users/{uid}/inventory e users/{uid}/shopping.
+// Publique no console: Firestore Database → Regras → cole este arquivo → Publicar.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

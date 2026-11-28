@@ -5,7 +5,6 @@ import br.com.casaemdia.domain.model.InventoryItem
 import br.com.casaemdia.domain.model.ShoppingItem
 import br.com.casaemdia.domain.repository.InventoryRepository
 import br.com.casaemdia.domain.repository.ShoppingRepository
-import br.com.casaemdia.domain.repository.TransactionRunner
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -47,7 +46,7 @@ fun InventoryItem.suggestedPurchaseQuantity(): Double =
     maxOf(1.0, (minQuantity * 2) - quantity)
 
 class AddSuggestionToShoppingList(private val shopping: ShoppingRepository) {
-    suspend operator fun invoke(item: InventoryItem): Long =
+    suspend operator fun invoke(item: InventoryItem): String =
         shopping.add(
             ShoppingItem(
                 name = item.name,
@@ -59,22 +58,25 @@ class AddSuggestionToShoppingList(private val shopping: ShoppingRepository) {
 }
 
 /**
- * Marks a shopping entry as purchased (or not) and, when linked to the inventory, restocks it.
+ * Marca uma entrada da lista como comprada (ou não) e, se ela estiver ligada ao estoque,
+ * reabastece o item. Desmarcar desfaz o reabastecimento sem deixar o estoque negativo.
  *
- * The current state is read from the repository inside a transaction, so repeated calls with the
- * same value (double taps, stale UI state) are no-ops and never restock the inventory twice.
+ * O estado atual é relido do repositório, então chamar de novo com o mesmo valor (toque duplo,
+ * tela desatualizada) não faz nada. A marcação e o ajuste de estoque são gravados juntos.
  */
 class SetItemPurchased(
     private val shopping: ShoppingRepository,
     private val inventory: InventoryRepository,
-    private val transaction: TransactionRunner,
 ) {
-    suspend operator fun invoke(itemId: Long, purchased: Boolean) = transaction.run {
-        val current = shopping.getItem(itemId) ?: return@run
-        if (current.purchased == purchased) return@run
-        shopping.setPurchased(itemId, purchased)
-        val linked = current.inventoryItemId?.let { inventory.getItem(it) } ?: return@run
-        val delta = if (purchased) current.quantity else -current.quantity
-        inventory.save(linked.copy(quantity = maxOf(0.0, linked.quantity + delta)))
+    suspend operator fun invoke(itemId: String, purchased: Boolean) {
+        val current = shopping.getItem(itemId) ?: return
+        if (current.purchased == purchased) return
+        val linked = current.inventoryItemId?.let { inventory.getItem(it) }
+        val delta = when {
+            linked == null -> 0.0
+            purchased -> current.quantity
+            else -> -minOf(current.quantity, linked.quantity)
+        }
+        shopping.setPurchased(itemId, purchased, linked?.id, delta)
     }
 }

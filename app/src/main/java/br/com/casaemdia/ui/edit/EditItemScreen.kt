@@ -78,7 +78,7 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditItemScreen(
-    itemId: Long,
+    itemId: String,
     onBack: () -> Unit,
     viewModel: EditItemViewModel = koinViewModel(parameters = { parametersOf(itemId) }),
 ) {

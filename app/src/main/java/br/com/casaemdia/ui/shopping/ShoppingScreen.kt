@@ -217,7 +217,7 @@ private fun ShoppingRow(
 @Composable
 private fun ShoppingScreenPreview() {
     val sampleItem = InventoryItem(
-        id = 1,
+        id = "1",
         name = "Café Torrado e Moído 500g",
         category = Category.FOOD,
         quantity = 0.0,
@@ -225,11 +225,11 @@ private fun ShoppingScreenPreview() {
         minQuantity = 1.0,
     )
     val pendingShopping = listOf(
-        ShoppingItem(id = 1, name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
-        ShoppingItem(id = 2, name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
+        ShoppingItem(id = "1", name = "Açúcar 1kg", quantity = 1.0, unit = UnitType.KG, purchased = false),
+        ShoppingItem(id = "2", name = "Papel Toalha", quantity = 2.0, unit = UnitType.PACK, purchased = false),
     )
     val purchasedShopping = listOf(
-        ShoppingItem(id = 3, name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
+        ShoppingItem(id = "3", name = "Pão de Forma", quantity = 1.0, unit = UnitType.PACK, purchased = true),
     )
     CasaEmDiaTheme {
         ShoppingContent(
